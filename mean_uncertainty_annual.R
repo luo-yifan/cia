@@ -49,14 +49,20 @@ func <- function(lake_name, balance_component) {
       y = recent_mean,
       yend = recent_mean
     ),
-    data = annual_mean) +
+    data = annual_mean)  +
+    # geom_ribbon(aes(ymin = recent_mean - recent_sd,
+    #                 ymax = recent_mean + recent_sd),
+    #             alpha = 0.1) + 
     geom_segment(aes(
       x = 1950,
-      xend = 1978,
+      xend = 1979,
       y = reference_mean,
       yend = reference_mean
     ),
     data = annual_mean)
+  # + geom_ribbon(aes(ymin = reference_mean -  reference_sd,
+  #                   ymax = reference_mean +  reference_sd),
+  #               alpha = 0.1)
   plot_sup_precip_mean
   ggsave(paste('./output/',lake_name, balance_component, "mean.png", sep = "_"))
   

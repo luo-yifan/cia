@@ -6,9 +6,14 @@ library(tibble)
 library(zoo)
 library(changepoint)
 library(r2r)
-library(lubridate)
+library(lubridate)  
+library(segmented)
+library(grid)
+library(gridExtra)
+library(lattice)
 
 setwd("./")
+
 mean_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
@@ -37,9 +42,10 @@ mean_func <- function(lake_name, balance_component) {
   
   plot_sup_precip_mean <-
     ggplot(data = annual_mean, aes(x = Year, y = Median)) +
-    geom_line(color = "red") +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
     labs(# title = "Lake Superior Annual Percipitation Comparison: 1950-1978 vs 1979-2019",
-      y = "(mm)",
+      y = "mm",
       x = "Year")+
     geom_segment(aes(
       x = 1979,
@@ -49,7 +55,71 @@ mean_func <- function(lake_name, balance_component) {
     ),data = annual_mean) +
     geom_segment(aes(
       x = 1950,
-      xend = 1978,
+      xend = 1979,
+      y = reference_mean,
+      yend = reference_mean
+    ),
+    data = annual_mean)
+  return(plot_sup_precip_mean)
+}
+
+mean_ci_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_mean <- aggregate(Median ~ Year , data = sup_precip , mean)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , mean)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , mean)
+  
+  reference_mean <-
+    mean(annual_mean$Median[annual_mean$Year < 1979])
+  reference_sd <- sd(annual_mean$Median[annual_mean$Year < 1979])
+  recent_mean <- mean(annual_mean$Median[annual_mean$Year >= 1979])
+  recent_sd <- sd(annual_mean$Median[annual_mean$Year >= 1979])
+  
+  annual_mean = annual_mean %>%
+    mutate(low = 
+             if_else(Year < 1979, reference_mean - reference_sd, recent_mean - recent_sd)
+    )
+  
+  
+  annual_mean = annual_mean %>%
+    mutate(high = 
+             if_else(Year  < 1979, reference_mean + reference_sd, recent_mean + recent_sd)
+    )
+  
+  plot_sup_precip_mean <-
+    ggplot(data = annual_mean, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    geom_ribbon(aes(ymin = low, ymax = high), 
+                alpha=0.1, 
+                linetype="dashed",
+                color="grey")+
+    labs(# title = "Lake Superior Annual Percipitation Comparison: 1950-1978 vs 1979-2019",
+      y = "mm",
+      x = "Year")+
+    geom_segment(aes(
+      x = 1979,
+      xend = 2019,
+      y = recent_mean,
+      yend = recent_mean
+    ),data = annual_mean) +
+    geom_segment(aes(
+      x = 1950,
+      xend = 1979,
       y = reference_mean,
       yend = reference_mean
     ),
@@ -101,10 +171,92 @@ cpt_func <- function(lake_name, balance_component) {
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_mean, aes(x = Year, y = Median)) +
-    geom_line(color = "red") +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
     labs(
       # title = "Lake Superior Annual Percipitation Comparison: 1950-2011 vs 2012-2019",
-      y = "(mm)",
+      y = "mm",
+      x = "Year") +
+    geom_segment(aes(
+      x = split_year,
+      xend = 2019,
+      y = recent_mean_cpt,
+      yend = recent_mean_cpt
+    ),
+    data = annual_mean) +
+    geom_segment(
+      aes(
+        x = 1950,
+        xend = split_year,
+        y = reference_mean_cpt,
+        yend = reference_mean_cpt
+      ),
+      data = annual_mean
+    )
+  
+  return(plot_sup_precip_mean_cpt)
+}
+
+cpt_ci_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  sup_precip.ts <-
+    ts(annual_mean$Median,
+       start = c(1950),
+       end = c(2019))
+  year_index = cpts(cpt.mean(sup_precip.ts))
+  split_year = annual_mean[year_index, ]$Year
+  #plot(cpt.mean(sup_precip.ts))
+  
+  annual_mean <- aggregate(Median ~ Year , data = sup_precip , mean)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , mean)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , mean)
+  
+  reference_mean_cpt <-
+    mean(annual_mean$Median[annual_mean$Year < split_year])
+  reference_sd_cpt <-
+    sd(annual_mean$Median[annual_mean$Year < split_year])
+  recent_mean_cpt <-
+    mean(annual_mean$Median[annual_mean$Year >= split_year])
+  recent_sd_cpt <-
+    sd(annual_mean$Median[annual_mean$Year >= split_year])
+
+  annual_mean = annual_mean %>%
+    mutate(low = 
+             if_else(Year < split_year, reference_mean_cpt - reference_sd_cpt, recent_mean_cpt - recent_sd_cpt)
+    )
+  
+  
+  annual_mean = annual_mean %>%
+    mutate(high = 
+             if_else(Year < split_year, reference_mean_cpt + reference_sd_cpt, recent_mean_cpt + recent_sd_cpt)
+    )
+  
+  plot_sup_precip_mean_cpt <-
+    ggplot(data = annual_mean, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    # geom_bar(stat="identity", position = "identity", fill="red") +
+    geom_ribbon(aes(ymin = low, ymax = high), 
+                alpha=0.1, 
+                linetype="dashed",
+                color="grey")+
+    labs(
+      # title = "Lake Superior Annual Percipitation Comparison: 1950-2011 vs 2012-2019",
+      y = "mm",
       x = "Year") +
     geom_segment(aes(
       x = split_year,
@@ -154,8 +306,9 @@ smooth_func <- function(lake_name, balance_component) {
   
   plot_sup_precip_smoothmean <-
     ggplot(data = annual_mean, aes(x = Year, y = Median)) +
-    geom_line(color = "red") +
-    labs(y = "(mm)",
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labs(y = "mm",
          x = "Year") +
     geom_smooth(color = "black", size = 0.5)
   plot_sup_precip_smoothmean
@@ -163,8 +316,62 @@ smooth_func <- function(lake_name, balance_component) {
   return(plot_sup_precip_smoothmean)
 }
 
+hockeystick_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_mean <- aggregate(Median ~ Year , data = sup_precip , mean)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , mean)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , mean)
+  
+  reference_mean <-
+    mean(annual_mean$Median[annual_mean$Year < 1979])
+  reference_sd <- sd(annual_mean$Median[annual_mean$Year < 1979])
+  recent_mean <- mean(annual_mean$Median[annual_mean$Year >= 1979])
+  recent_sd <- sd(annual_mean$Median[annual_mean$Year >= 1979])
+  
+  set.seed(12)
+  xx <- annual_mean$Year
+  yy <- annual_mean$Median
+  dati <- data.frame(x = xx, y = yy)
+  out.lm <- lm(y ~ x, data = dati)
+  o <- segmented(
+    out.lm,
+    seg.Z = ~ x,
+    control = seg.control(display = FALSE)
+  )
+  slope(o)
+  dat2 <- data.frame(x = xx, y = broken.line(o)$fit)
+  
+  ggplot(dati, aes(x = x, y = y)) +
+    geom_line() +
+    geom_line(data = dat2, color = 'red') +
+    geom_point(colour = "black", size = 0.5) +
+    labs(y = "mm",
+         x = "Year") 
+}
 
-ggarrange(
+
+# func = mean_func
+# func = cpt_func
+# func = smooth_func
+# func = mean_ci_func
+# func = cpt_ci_func
+func = hockeystick_func
+
+figure <-ggarrange(
   func("superior", "Precip"),
   func("superior", "Evap"),
   func("superior", "Runoff"),
@@ -175,7 +382,13 @@ ggarrange(
   func("erie", "Evap"),
   func("erie", "Runoff"),
   ncol = 3,
-  nrow = 3
+  nrow = 3,
+  label.x = "Lake: Superior, Michigan-Huron, Erie",
+  label.y = "Component: Precipitation, Evaporation, Runoff"
 )
 
-# mean_func("superior", "Precip")
+
+annotate_figure(figure,
+                top = text_grob("Lake: Superior, Michigan-Huron, Erie", color = "red"),
+                right = text_grob("Component: Precipitation, Evaporation, Runoff", color = "blue", rot = 270)
+)
