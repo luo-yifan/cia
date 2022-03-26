@@ -398,7 +398,6 @@ func = mean_ci_func
 # func = cpt_ci_func
 # func = hockeystick_func
 
-figure =
 ggarrange(
   func("superior", "Precip"),
   func("superior", "Evap"),
@@ -412,13 +411,3 @@ ggarrange(
   ncol = 3,
   nrow = 3
 ) 
-# + facet_wrap(~ lake_name + balance_component) 
-
-annotate_figure(
-  figure,
-  right = text_grob("Lake: Superior, Michigan-Huron, Erie", color = "red", rot = 270),
-  top = text_grob(
-    "Component: Precipitation, Evaporation, Runoff",
-    color = "blue"
-  )
-)
