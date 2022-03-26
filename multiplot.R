@@ -391,14 +391,14 @@ hockeystick_func <- function(lake_name, balance_component) {
   #      x = "Year")
 }
 
-
-# func = mean_func
+ 
 # func = cpt_func
 # func = smooth_func
 func = mean_ci_func
 # func = cpt_ci_func
 # func = hockeystick_func
 
+figure =
 ggarrange(
   func("superior", "Precip"),
   func("superior", "Evap"),
@@ -411,14 +411,14 @@ ggarrange(
   func("erie", "Runoff"),
   ncol = 3,
   nrow = 3
-)
+) 
+# + facet_wrap(~ lake_name + balance_component) 
 
-# annotate_figure(
-#   figure,
-#   top = text_grob("Lake: Superior, Michigan-Huron, Erie", color = "red"),
-#   right = text_grob(
-#     "Component: Precipitation, Evaporation, Runoff",
-#     color = "blue",
-#     rot = 270
-#   )
-# )
+annotate_figure(
+  figure,
+  right = text_grob("Lake: Superior, Michigan-Huron, Erie", color = "red", rot = 270),
+  top = text_grob(
+    "Component: Precipitation, Evaporation, Runoff",
+    color = "blue"
+  )
+)
