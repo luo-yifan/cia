@@ -34,18 +34,19 @@ mean_func <- function(lake_name, balance_component) {
   reference_mean <-
     mean(annual_sum$Median[annual_sum$Year < 1979])
   reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
-  recent_sum <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+  recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
+  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-    # ylim(40,100) +
     geom_line() +
     geom_point(colour = "black", size = 0.5) +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    # labs(# title = "Lake Superior Annual Percipitation Comparison: 1950-1978 vs 1979-2019",
-    #   y = "mm",
-    #   x = "Year") +
+    labels +
+    title +
+    theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = 1979,
       xend = 2019,
@@ -106,21 +107,20 @@ mean_ci_func <- function(lake_name, balance_component) {
                recent_mean + recent_sd
              ))
   
+  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-    # ylim(40,100) +
     geom_line() +
     geom_point(colour = "black", size = 0.5) +
+    labels + title +theme(plot.title = element_text(hjust = 0.5)) + 
     geom_ribbon(
       aes(ymin = low, ymax = high),
       alpha = 0.1,
       linetype = "dashed",
       color = "grey"
     ) +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    # labs(# title = "Lake Superior Annual Precipitation Comparison: 1950-1978 vs 1979-2019",
-    #   y = "mm",
-    #   x = "Year") +
     geom_segment(aes(
       x = 1979,
       xend = 2019,
@@ -146,7 +146,6 @@ cpt_func <- function(lake_name, balance_component) {
                    sep = "")
   sup_precip <-
     read.csv(filename)
-  str(sup_precip)
   sup_precip$yearmon <-
     as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
   sup_precip$formated_date <-
@@ -180,15 +179,14 @@ cpt_func <- function(lake_name, balance_component) {
   recent_sd_cpt <-
     sd(annual_sum$Median[annual_sum$Year >= split_year])
   
+  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-    # ylim(40,100) +
     geom_line() +
     geom_point(colour = "black", size = 0.5) +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    # labs(# title = "Lake Superior Annual Percipitation Comparison: 1950-2011 vs 2012-2019",
-    #   y = "mm",
-    #   x = "Year") +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) + 
     geom_segment(aes(
       x = split_year,
       xend = 2019,
@@ -223,19 +221,18 @@ cpt_ci_func <- function(lake_name, balance_component) {
   sup_precip$formated_date <-
     format(as.Date(sup_precip$yearmon), "%m/%Y")
   
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
        end = c(2019))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index,]$Year
-  #plot(cpt.mean(sup_precip.ts))
-  
-  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
-  annual_2.5 <-
-    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
-  annual_97.5 <-
-    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
   
   reference_mean_cpt <-
     mean(annual_sum$Median[annual_sum$Year < split_year])
@@ -267,22 +264,20 @@ cpt_ci_func <- function(lake_name, balance_component) {
         )
     )
   
+  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-    # ylim(40,100) +
     geom_line() +
     geom_point(colour = "black", size = 0.5) +
-    # geom_bar(stat="identity", position = "identity", fill="red") +
+    labels + title +theme(plot.title = element_text(hjust = 0.5)) + 
     geom_ribbon(
       aes(ymin = low, ymax = high),
       alpha = 0.1,
       linetype = "dashed",
       color = "grey"
     ) +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    # labs(# title = "Lake Superior Annual Percipitation Comparison: 1950-2011 vs 2012-2019",
-    #   y = "mm",
-    #   x = "Year") +
     geom_segment(aes(
       x = split_year,
       xend = 2019,
@@ -329,14 +324,14 @@ smooth_func <- function(lake_name, balance_component) {
   recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
+  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  
   plot_sup_precip_smoothmean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-    # ylim(40,100) +
     geom_line() +
     geom_point(colour = "black", size = 0.5) +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    # labs(y = "mm",
-    #      x = "Year") +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) + 
     geom_smooth(color = "black", size = 0.5)
   plot_sup_precip_smoothmean
   
@@ -381,21 +376,21 @@ hockeystick_func <- function(lake_name, balance_component) {
   slope(o)
   dat2 <- data.frame(x = xx, y = broken.line(o)$fit)
   
+  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  
   ggplot(dati, aes(x = x, y = y)) +
-    ylim(40, 110) +
     geom_line() +
     geom_line(data = dat2, color = 'red') +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-    geom_point(colour = "black", size = 0.5)
-  # + labs(y = "mm",
-  #      x = "Year")
+    geom_point(colour = "black", size = 0.5) + 
+    labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
- 
+func = mean_func
 # func = cpt_func
 # func = smooth_func
-func = mean_ci_func
-# func = cpt_ci_func
+# func = mean_ci_func
+func = cpt_ci_func
 # func = hockeystick_func
 
 ggarrange(
