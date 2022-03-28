@@ -37,8 +37,8 @@ mean_func <- function(lake_name, balance_component) {
   recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
-  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
 
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -107,8 +107,8 @@ mean_ci_func <- function(lake_name, balance_component) {
                recent_mean + recent_sd
              ))
   
-  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
   
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -179,8 +179,8 @@ cpt_func <- function(lake_name, balance_component) {
   recent_sd_cpt <-
     sd(annual_sum$Median[annual_sum$Year >= split_year])
   
-  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -264,8 +264,8 @@ cpt_ci_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -324,8 +324,8 @@ smooth_func <- function(lake_name, balance_component) {
   recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
-  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
   
   plot_sup_precip_smoothmean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -376,8 +376,8 @@ hockeystick_func <- function(lake_name, balance_component) {
   slope(o)
   dat2 <- data.frame(x = xx, y = broken.line(o)$fit)
   
-  labels = if (balance_component == "Precip")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "superior") ggtitle(balance_component) else NULL
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
   
   ggplot(dati, aes(x = x, y = y)) +
     geom_line() +
@@ -386,23 +386,23 @@ hockeystick_func <- function(lake_name, balance_component) {
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
-func = mean_func
+# func = mean_func
 # func = cpt_func
-# func = smooth_func
+func = smooth_func
 # func = mean_ci_func
-func = cpt_ci_func
+# func = cpt_ci_func
 # func = hockeystick_func
 
 ggarrange(
-  func("superior", "Precip"),
-  func("superior", "Evap"),
-  func("superior", "Runoff"),
-  func("miHuron", "Precip"),
-  func("miHuron", "Evap"),
-  func("miHuron", "Runoff"),
-  func("erie", "Precip"),
-  func("erie", "Evap"),
-  func("erie", "Runoff"),
+  func("Superior", "Precipitation"),
+  func("Superior", "Evaporation"),
+  func("Superior", "Runoff"),
+  func("MichiganHuron", "Precipitation"),
+  func("MichiganHuron", "Evaporation"),
+  func("MichiganHuron", "Runoff"),
+  func("Erie", "Precipitation"),
+  func("Erie", "Evaporation"),
+  func("Erie", "Runoff"),
   ncol = 3,
   nrow = 3
 ) 
