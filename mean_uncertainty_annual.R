@@ -88,7 +88,7 @@ func <- function(lake_name, balance_component) {
     geom_line(color = "red") +
     labs(
       # title = "Lake Superior Annual Percipitation Comparison: 1950-2011 vs 2012-2019",
-         y = "(mm)",
+         y = "mm",
          x = "Year") +
     geom_segment(aes(
       x = split_year,
@@ -112,7 +112,7 @@ func <- function(lake_name, balance_component) {
   plot_sup_precip_smoothmean <-
     ggplot(data = annual_mean, aes(x = Year, y = Median)) +
     geom_line(color = "red") +
-    labs(y = "(mm)",
+    labs(y = "mm",
          x = "Year") +
     geom_smooth(color = "black", size = 0.5)
   plot_sup_precip_smoothmean
@@ -122,12 +122,12 @@ func <- function(lake_name, balance_component) {
     ggplot(data = annual_mean,
            aes(x = Year,
                y = Median)) +
-    xlim (1980, 2000) +
-    ylim (0, 120) +
+    # xlim (1980, 2000) +
+    # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.15),
                     ymax = Median * (1 + 0.15)), fill = "grey70") +
     labs(title = "Uncertainty of Lake Superior Percipitation from Neff and Nicholas Paper (15%)",
-         y = "Annual Percipitation (mm)",
+         y = "mm",
          x = "Year") +
     geom_line(color = "red")
   plot_sup_precip_usgserror_low
@@ -136,12 +136,12 @@ func <- function(lake_name, balance_component) {
     ggplot(data = annual_mean,
            aes(x = Year,
                y = Median)) +
-    xlim (1980, 2000) +
-    ylim (0, 120) +
+    # xlim (1980, 2000) +
+    # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.45),
                     ymax = Median * (1 + 0.45)), fill = "grey70") +
     labs(title = "Uncertainty of Lake Superior Percipitation from Neff and Nicholas Paper (45%)",
-         y = "Annual Percipitation (mm)",
+         y = "mm",
          x = "Year") +
     geom_line(color = "red")
   plot_sup_precip_usgserror_high
@@ -150,8 +150,8 @@ func <- function(lake_name, balance_component) {
     ggplot(data = annual_mean,
            aes(x = Year,
                y = Median)) +
-    xlim (1980, 2000) +
-    ylim (0, 120) +
+    # xlim (1980, 2000) +
+    # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.45),
                     ymax = Median * (1 + 0.45)), fill = "grey70") +
     geom_ribbon(aes(
@@ -159,16 +159,16 @@ func <- function(lake_name, balance_component) {
       ymax = annual_97.5$X97.5.Percentile
     ),
     fill = "grey60") +
-    labs(title = "Uncertainty of Lake Superior Percipitation L2SWBS Model (95% Confidence Interval)",
-         y = "Annual Percipitation (mm)",
+    labs(title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
+         y = "mm",
          x = "Year") +
     geom_line(color = "red")
   plot_sup_precip_l2serror
  
 }
 
-lake_names = c("superior", "miHuron", "erie")
-balance_components = c("Precip", "Evap", "Runoff")
+lake_names = c("Superior", "MichiganHuron", "Erie")
+balance_components = c("Precipitation", "Evaporation", "Runoff")
 
 for (lake_name in lake_names) {
   for (balance_component in balance_components) {

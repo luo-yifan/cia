@@ -11,6 +11,82 @@ library(segmented)
 
 setwd("./")
 
+uncertainty_percent_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  sup_precip <- sup_precip %>% 
+    mutate(uncertainty_percent = (X97.5.Percentile-Median)/Median)
+  
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  
+  plot_sup_precip_uncertainty_percent <-
+    ggplot(data = sup_precip, aes(x = Median, y = uncertainty_percent)) +
+    # geom_line() +
+    geom_smooth(method='loess', color = "red", size = 0.5) +
+    geom_point(colour = "black", size = 0.5) +
+    labels + 
+    title +
+    theme(plot.title = element_text(hjust = 0.5)) 
+    
+  return(plot_sup_precip_uncertainty_percent)
+}
+
+uncertainty_mm_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  sup_precip <- sup_precip %>% 
+    mutate(uncertainty_mm = X97.5.Percentile-Median)
+  
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  
+  plot_sup_precip_uncertainty_mm <-
+    ggplot(data = sup_precip, aes(x = Median, y = uncertainty_mm)) +
+    # geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    geom_smooth(method='loess', color = "red", size = 0.5) +
+    labels + 
+    title +
+    theme(plot.title = element_text(hjust = 0.5)) 
+  
+  return(plot_sup_precip_uncertainty_mm)
+}
+
 mean_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
@@ -386,9 +462,11 @@ hockeystick_func <- function(lake_name, balance_component) {
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
+# func = uncertainty_percent_func
+# func = uncertainty_mm_func
 # func = mean_func
 # func = cpt_func
-func = smooth_func
+# func = smooth_func
 # func = mean_ci_func
 # func = cpt_ci_func
 # func = hockeystick_func
