@@ -32,7 +32,7 @@ uncertainty_percent_func <- function(lake_name, balance_component) {
     aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
   
   sup_precip <- sup_precip %>% 
-    mutate(uncertainty_percent = (abs(X97.5.Percentile)-abs(Median))/abs(Median))
+    mutate(uncertainty_percent = (abs(X97.5.Percentile-Median))/abs(Median))
   
   labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
   title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
@@ -40,7 +40,7 @@ uncertainty_percent_func <- function(lake_name, balance_component) {
   plot_sup_precip_uncertainty_percent <-
     ggplot(data = sup_precip, aes(x = abs(Median), y = uncertainty_percent)) +
     # geom_line() +
-    # geom_smooth(method='loess', color = "red", size = 0.5) +
+    geom_smooth(method='loess', color = "red", size = 0.5) +
     geom_point(colour = "black", size = 0.5) +
     labels + 
     title +
@@ -462,7 +462,7 @@ hockeystick_func <- function(lake_name, balance_component) {
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
-func = uncertainty_percent_func
+# func = uncertainty_percent_func
 # func = uncertainty_mm_func
 # func = mean_func
 # func = cpt_func
@@ -481,6 +481,9 @@ ggarrange(
   func("Erie", "Precipitation"),
   func("Erie", "Evaporation"),
   func("Erie", "Runoff"),
+  func("Ontario", "Precipitation"),
+  func("Ontario", "Evaporation"),
+  func("Ontario", "Runoff"),
   ncol = 3,
-  nrow = 3
+  nrow = 4
 ) 
