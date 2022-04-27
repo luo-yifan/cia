@@ -9,7 +9,7 @@ library(r2r)
 library(lubridate)
 library(segmented)
 library(SiZer)
-
+theme_set(theme_grey())
 setwd("./")
 
 uncertainty_percent_func <- function(lake_name, balance_component) {
@@ -585,7 +585,8 @@ rollmean_func <- function(lake_name, balance_component) {
   
   
 
-  dur = 5;
+  dur = 20
+
   dati %>%
     mutate(ten_avg= rollmean(y, dur,
                                align="right", 
@@ -620,9 +621,9 @@ rollmean_func <- function(lake_name, balance_component) {
 # func = hockeystick_func
 
 
-#func = autodetect_func
+func = autodetect_func
 #func = set1979_func
-func = rollmean_func
+#func = rollmean_func
 
 ggarrange(
   func("Superior", "Precipitation"),
