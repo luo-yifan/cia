@@ -8,6 +8,7 @@ library(changepoint)
 library(r2r)
 library(lubridate)
 library(segmented)
+library(SiZer)
 
 setwd("./")
 
@@ -462,6 +463,153 @@ hockeystick_func <- function(lake_name, balance_component) {
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
+autodetect_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  reference_mean <-
+    mean(annual_sum$Median[annual_sum$Year < 1979])
+  reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
+  recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+  recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
+  
+  set.seed(12)
+  xx <- annual_sum$Year
+  yy <- annual_sum$Median
+  dati <- data.frame(x = xx, y = yy)
+  model <- piecewise.linear(dati$x,dati$y, CI=FALSE)
+  
+  dati$grp = factor(ifelse(dati$x > model$change.point,1,0))
+
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  
+  ggplot(dati,aes(x=x,y=y,group=grp)) + 
+    geom_line() +
+    geom_point(size = 0.5) + geom_smooth(method="lm",formula=y~x,col="red")+
+    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+}
+
+set1979_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  reference_mean <-
+    mean(annual_sum$Median[annual_sum$Year < 1979])
+  reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
+  recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+  recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
+  
+  set.seed(12)
+  xx <- annual_sum$Year
+  yy <- annual_sum$Median
+  dati <- data.frame(x = xx, y = yy)
+  model <- piecewise.linear(dati$x,dati$y, CI=FALSE)
+  
+  dati$grp = factor(ifelse(dati$x >= 1979,1,0))
+  
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  
+  ggplot(dati,aes(x=x,y=y,group=grp)) + 
+    geom_line() +
+    geom_point(size = 0.5) + geom_smooth(method="lm",formula=y~x,col="red")+
+    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+}
+
+rollmean_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  reference_mean <-
+    mean(annual_sum$Median[annual_sum$Year < 1979])
+  reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
+  recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+  recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
+  
+  set.seed(12)
+  xx <- annual_sum$Year
+  yy <- annual_sum$Median
+  dati <- data.frame(x = xx, y = yy)
+  
+  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
+  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  
+  
+
+  dur = 5;
+  dati %>%
+    mutate(ten_avg= rollmean(y, dur,
+                               align="right", 
+                               fill = NA)) %>%
+    mutate(ten_sd= rollapply(y, dur,sd,
+                               align="right", 
+                               fill = NA)) %>%
+    ggplot(aes(x=x,
+               y=y)) +
+    geom_line() +
+    geom_point(size = 0.5)+
+    geom_line(aes(y = ten_avg), 
+              color = "red", 
+              size = .75)+
+    geom_ribbon(
+      aes(ymin = ten_avg+ ten_sd, ymax = ten_avg- ten_sd),
+      alpha = 0.1,
+      linetype = "dashed",
+      color = "grey"
+    ) +
+    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+}
+
+
 # func = uncertainty_percent_func
 # func = uncertainty_mm_func
 # func = mean_func
@@ -470,6 +618,11 @@ hockeystick_func <- function(lake_name, balance_component) {
 # func = mean_ci_func
 # func = cpt_ci_func
 # func = hockeystick_func
+
+
+#func = autodetect_func
+#func = set1979_func
+func = rollmean_func
 
 ggarrange(
   func("Superior", "Precipitation"),
