@@ -9,6 +9,12 @@ library(r2r)
 library(lubridate)
 
 setwd("./")
+
+
+lake_names = c("Superior", "MichiganHuron", "Erie", "Ontario")
+balance_components = c("Precipitation", "Evaporation", "Runoff","Outflow")
+months = c("1", "2", "3", "4", "5" , "6", "7", "8", "9", "10", "11", "12")
+
 func <- function(lake_name, balance_component, month_str) {
   filename = paste("./l2s_posterior/",
                    lake_name,
@@ -25,11 +31,50 @@ func <- function(lake_name, balance_component, month_str) {
   sup_precip$formated_date <-
     format(as.Date(sup_precip$yearmon), "%m/%Y")
   
+  sup_precip$order<-1:nrow(sup_precip)
+  sup_precip
+  
   reference_mean <- mean(sup_precip$Median[sup_precip$Year < 1979])
   reference_sd <- sd(sup_precip$Median[sup_precip$Year < 1979])
   recent_mean <- mean(sup_precip$Median[sup_precip$Year >= 1979])
   recent_sd <- sd(sup_precip$Median[sup_precip$Year >= 1979])
   
+  plot_sup_precip_linear <-
+    ggplot(data = sup_precip, aes(x = order, y = Median)) +
+    geom_point() +
+    labs(title = "",
+         y = "mm",
+         x = "Date") +
+    geom_smooth(method="lm", col="black") +
+    stat_regline_equation()
+  # geom_segment(aes(
+  #   x = as.yearmon(paste("1979 ", month_str, sep = ''), "%Y %m"),
+  #   xend = as.yearmon(paste("2019 ", month_str, sep = ''), "%Y %m"),
+  #   y = recent_mean,
+  #   yend = recent_mean
+  # ),
+  # data = sup_precip) +
+  # geom_segment(
+  #   aes(
+  #     x = as.yearmon(paste("1950 ", month_str, sep = ''), "%Y %m"),
+  #     xend = as.yearmon(paste("1978 ", month_str, sep = ''), "%Y %m"),
+  #     y = reference_mean,
+  #     yend = reference_mean
+  #   ),
+  #   data = sup_precip
+  # )
+  plot_sup_precip_linear
+  ggsave(
+    paste(
+      './output_monthly/',
+      lake_name,
+      balance_component,
+      month_str,
+      "linear.png",
+      sep = "_"
+    )
+  )
+
   plot_sup_precip_mean <-
     ggplot(data = sup_precip, aes(x = yearmon, y = Median)) +
     geom_line(color = "red") +
@@ -63,14 +108,14 @@ func <- function(lake_name, balance_component, month_str) {
       sep = "_"
     )
   )
-  
+
   sup_precip.ts <-
     ts(sup_precip$Median,
        start = c(1950),
        end = c(2019))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = sup_precip[year_index, ]$Year
-  
+
   reference_mean_cpt <-
     mean(sup_precip$Median[sup_precip$Year < split_year])
   reference_sd_cpt <-
@@ -79,7 +124,7 @@ func <- function(lake_name, balance_component, month_str) {
     mean(sup_precip$Median[sup_precip$Year >= split_year])
   recent_sd_cpt <-
     sd(sup_precip$Median[sup_precip$Year >= split_year])
-  
+
   plot_sup_precip_mean_cpt <-
     ggplot(data = sup_precip, aes(x = yearmon, y = Median)) +
     geom_line(color = "red") +
@@ -109,7 +154,7 @@ func <- function(lake_name, balance_component, month_str) {
       data = sup_precip
     )
   plot_sup_precip_mean_cpt
-  
+
   ggsave(
     paste(
       './output_monthly/',
@@ -120,8 +165,8 @@ func <- function(lake_name, balance_component, month_str) {
       sep = "_"
     )
   )
-  
-  
+
+
   plot_sup_precip_smoothmean <-
     ggplot(data = sup_precip, aes(x = yearmon, y = Median)) +
     geom_line(color = "red") +
@@ -139,8 +184,8 @@ func <- function(lake_name, balance_component, month_str) {
       sep = "_"
     )
   )
-  
-  
+
+
   plot_sup_precip_usgserror_low <-
     ggplot(data = sup_precip,
            aes(x = yearmon,
@@ -166,7 +211,7 @@ func <- function(lake_name, balance_component, month_str) {
   #   ymax = Median * (1 + 0.15),
   #   size = .2)
   plot_sup_precip_usgserror_low
-  
+
   plot_sup_precip_usgserror_high <-
     ggplot(data = sup_precip, aes(x = yearmon, y = Median)) +
     # xlim (1980, 1985) +
@@ -178,7 +223,7 @@ func <- function(lake_name, balance_component, month_str) {
     #      x = "Year") +
     geom_line(color = "red")
   plot_sup_precip_usgserror_high
-  
+
   plot_sup_precip_l2serror <-
     ggplot(data = sup_precip, aes(x = yearmon, y = Median)) +
     # xlim (1979, 2019) +
@@ -193,10 +238,6 @@ func <- function(lake_name, balance_component, month_str) {
   plot_sup_precip_l2serror
 }
 
-months = c("1", "2", "3", "4", "5" , "6", "7", "8", "9", "10", "11", "12")
-
-lake_names = c("Superior", "MichiganHuron", "Erie")
-balance_components = c("Precipitation", "Evaporation", "Runoff")
 # func("erie", "Evap", "1")
 
 for (month in months) {
