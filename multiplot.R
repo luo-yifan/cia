@@ -15,7 +15,7 @@ theme_set(theme_grey())
 setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
-balance_component = c("Precipitation", "Evaporation", "Runoff", " Outflow")
+balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
 
 uncertainty_percent_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
