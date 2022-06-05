@@ -11,6 +11,9 @@ library(segmented)
 library(SiZer)
 library(plotrix)
 
+library(strucchange)
+
+
 theme_set(theme_grey())
 setwd("./")
 
@@ -526,12 +529,25 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   annual_97.5 <-
     aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
   
+  
+  fit_bp = breakpoints(Median ~ 1, data = annual_sum, breaks = 2)
+  
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
        end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
-  split_year = annual_sum[year_index, ]$Year
+
+  
+
+  
+  
+  library(cpm)
+  fit_cpm = processStream(annual_sum$Median, cpmType = "Mann-Whitney")  # Multiple change points
+  fit_cpm$changePoints
+  split_year = fit_cpm$changePoints + 1950
+  
+  # split_year = annual_sum[year_index, ]$Year
   
   reference_mean_cpt <-
     mean(annual_sum$Median[annual_sum$Year < split_year])
@@ -884,7 +900,7 @@ rollmean_func <- function(lake_name, balance_component) {
 # func = set1979_func
 # func = rollmean_func
 # func = mean_stderror_func
-# func = cpt_stderror_func
+func = cpt_stderror_func
 
 ggarrange(
   func("Superior", "Precipitation"),
@@ -906,3 +922,39 @@ ggarrange(
   ncol = 4,
   nrow = 4
 )
+lake_name = "Superior"
+balance_component = "Evaporation"
+
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_GLWBData.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  library(EnvCpt)
+  fit_envcpt = envcpt(annual_sum$Median)  # Fit all models at once
+  fit_envcpt$summary  # Show log-likelihoods
+  plot(fit_envcpt)
+  fit_envcpt$meancpt@cpts
+  
+  library(strucchange)
+  ## Loading required package: sandwich
+  fit_bp = breakpoints(Median ~ 1, data = annual_sum, breaks = 2)
+  summary(fit_bp)
+  
+  library(cpm)
+  fit_cpm = processStream(annual_sum$Median, cpmType = "Mann-Whitney")  # Multiple change points
+  fit_cpm$changePoints
+  
