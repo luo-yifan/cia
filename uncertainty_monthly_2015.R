@@ -36,7 +36,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
     ggplot(data = sup_precip,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2020) +
+    xlim (2015, 2021) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.45),
                     ymax = Median * (1 + 0.45)), fill = "blue", alpha=0.3) +
@@ -78,7 +78,7 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
     ggplot(data = sup_evap,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2020) +
+    xlim (2015, 2021) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.35),
                     ymax = Median * (1 + 0.35)), fill = "blue", alpha=0.3) +
@@ -120,7 +120,7 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
     ggplot(data = sup_runoff,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2020) +
+    xlim (2015, 2021) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.35),
                     ymax = Median * (1 + 0.35)), fill = "blue", alpha=0.3) +
@@ -162,7 +162,7 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
     ggplot(data = sup_outflow,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2020) +
+    xlim (2015, 2021) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.15),
                     ymax = Median * (1 + 0.15)), fill = "blue", alpha=0.3) +

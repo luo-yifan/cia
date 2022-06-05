@@ -483,7 +483,7 @@ recent_19802020_func <- function(lake_name, balance_component, month_str) {
 #   }
 # }
 
-func = long_19502020_func
+# func = long_19502020_func
 # func = recent_19802020_func
 
 ggarrange(

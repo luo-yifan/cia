@@ -546,9 +546,9 @@ set1979_func <- function(lake_name, balance_component) {
 # func = uncertainty_mm_func
 # func = mean_func
 # func = cpt_func
-# func = smooth_func
 # func = mean_ci_func
 # func = cpt_ci_func
+# func = smooth_func
 # func = hockeystick_func
 # func = autodetect_func
 # func = set1979_func

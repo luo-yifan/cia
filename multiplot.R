@@ -153,7 +153,7 @@ mean_func <- function(lake_name, balance_component) {
     theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = 1979,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -233,7 +233,7 @@ mean_ci_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = 1979,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -319,7 +319,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = 1979,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -362,7 +362,7 @@ cpt_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -391,7 +391,7 @@ cpt_func <- function(lake_name, balance_component) {
     labels + title + theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -432,7 +432,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -488,7 +488,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -529,7 +529,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -585,7 +585,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
