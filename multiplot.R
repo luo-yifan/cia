@@ -924,7 +924,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
     return(res)
   }
   else{
-    res = ggplot(data1, aes(x = Year, y = Median)) + 
+    res = ggplot(annual_sum, aes(x = Year, y = Median)) + 
       geom_line() +
       geom_point(colour = "black", size = 0.5) +
       labels + title + theme(plot.title = element_text(hjust = 0.5)) 
