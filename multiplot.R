@@ -897,54 +897,6 @@ cpt_multiple_func <- function(lake_name, balance_component) {
     format(as.Date(sup_precip$yearmon), "%m/%Y")
   
   annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
-  annual_2.5 <-
-    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
-  annual_97.5 <-
-    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
-  
-  fit_bp = breakpoints(Median ~ 1, data = annual_sum, breaks = 2)
-  
-  sup_precip.ts <-
-    ts(annual_sum$Median,
-       start = c(1950),
-       end = c(2021))
-  year_index = cpts(cpt.mean(sup_precip.ts))
-  
-  library(cpm)
-  fit_cpm = processStream(annual_sum$Median, cpmType = "Mann-Whitney")  # Multiple change points
-  fit_cpm$changePoints
-  split_year = fit_cpm$changePoints + 1950
-  
-  # split_year = annual_sum[year_index, ]$Year
-  
-  reference_mean_cpt <-
-    mean(annual_sum$Median[annual_sum$Year < split_year])
-  reference_stderror_cpt <-
-    std.error(annual_sum$Median[annual_sum$Year < split_year])
-  recent_mean_cpt <-
-    mean(annual_sum$Median[annual_sum$Year >= split_year])
-  recent_stderror_cpt <-
-    std.error(annual_sum$Median[annual_sum$Year >= split_year])
-  
-  annual_sum = annual_sum %>%
-    mutate(
-      low =
-        if_else(
-          Year < split_year,
-          reference_mean_cpt - reference_stderror_cpt,
-          recent_mean_cpt - recent_stderror_cpt
-        )
-    )
-  
-  annual_sum = annual_sum %>%
-    mutate(
-      high =
-        if_else(
-          Year < split_year,
-          reference_mean_cpt + reference_stderror_cpt,
-          recent_mean_cpt + recent_stderror_cpt
-        )
-    )
   
   labels = if (balance_component == "Precipitation")
     labs(y = lake_name, x = NULL)
@@ -955,35 +907,29 @@ cpt_multiple_func <- function(lake_name, balance_component) {
   else
     NULL
   
-  plot_sup_precip_mean_cpt <-
-    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-    geom_line() +
-    geom_point(colour = "black", size = 0.5) +
-    labels + title + theme(plot.title = element_text(hjust = 0.5)) +
-    geom_ribbon(
-      aes(ymin = low, ymax = high),
-      alpha = 0.1,
-      linetype = "dashed",
-      color = "grey"
-    ) +
-    geom_segment(aes(
-      x = split_year,
-      xend = 2021,
-      y = recent_mean_cpt,
-      yend = recent_mean_cpt
-    ),
-    data = annual_sum) +
-    geom_segment(
-      aes(
-        x = 1950,
-        xend = split_year,
-        y = reference_mean_cpt,
-        yend = reference_mean_cpt
-      ),
-      data = annual_sum
-    )
+  library(segmented)
+  fit_lm = lm(Median ~ 1 + Year, data = annual_sum)  # intercept-only model
+  fit_segmented = segmented(fit_lm, seg.Z = ~Year, npsi = 2)  # Two change points along x
   
-  return(plot_sup_precip_mean_cpt)
+  if(!is.null(fit_segmented$psi)){
+    fit <- numeric(length(annual_sum$Year)) * NA
+    fit[complete.cases(rowSums(cbind(annual_sum$Median, annual_sum$Year)))] <- broken.line(fit_segmented)$fit
+    data1 <- data.frame(Year = annual_sum$Year, Median = annual_sum$Median, fit = fit)
+    
+    res = ggplot(data1, aes(x = Year, y = Median)) + 
+      geom_line() +
+      geom_point(colour = "black", size = 0.5) +
+      geom_line(aes(x = Year, y = fit), color = 'blue') +
+      labels + title + theme(plot.title = element_text(hjust = 0.5)) 
+    return(res)
+  }
+  else{
+    res = ggplot(data1, aes(x = Year, y = Median)) + 
+      geom_line() +
+      geom_point(colour = "black", size = 0.5) +
+      labels + title + theme(plot.title = element_text(hjust = 0.5)) 
+    return(res)
+  }
 }
 
 # func = uncertainty_percent_func
@@ -1022,39 +968,5 @@ ggarrange(
   nrow = 4
 )
 
-# lake_name = "Superior"
-# balance_component = "Evaporation"
-# 
-#   filename = paste("./l2s_posterior/",
-#                    lake_name,
-#                    balance_component,
-#                    "_GLWBData.csv",
-#                    sep = "")
-#   sup_precip <-
-#     read.csv(filename)
-#   str(sup_precip)
-#   sup_precip$yearmon <-
-#     as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
-#   sup_precip$formated_date <-
-#     format(as.Date(sup_precip$yearmon), "%m/%Y")
-# 
-#   annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
-#   annual_2.5 <-
-#     aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
-#   annual_97.5 <-
-#     aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
-#   library(EnvCpt)
-#   fit_envcpt = envcpt(annual_sum$Median)  # Fit all models at once
-#   fit_envcpt$summary  # Show log-likelihoods
-#   plot(fit_envcpt)
-#   fit_envcpt$meancpt@cpts
-#   
-#   library(strucchange)
-#   ## Loading required package: sandwich
-#   fit_bp = breakpoints(Median ~ 1, data = annual_sum, breaks = 2)
-#   summary(fit_bp)
-#   
-#   library(cpm)
-#   fit_cpm = processStream(annual_sum$Median, cpmType = "Mann-Whitney")  # Multiple change points
-#   fit_cpm$changePoints
-#   
+
+
