@@ -311,7 +311,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2010))
   year_index = cpts(cpt.mean(sup_precip_2010.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -367,7 +367,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2010,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -554,7 +554,7 @@ set1979_func <- function(lake_name, balance_component) {
 # func = set1979_func
 # func = rollmean_func
 # func = mean_stderror_func
-# func = cpt_stderror_func
+func = cpt_stderror_func
 
 ggarrange(
   func("Superior", "Precipitation"),
