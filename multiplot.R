@@ -521,6 +521,19 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   
   split_year = annual_sum[year_index, ]$Year
   
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  if(split_year - 1950 <=5 || 2021 - split_year <= 5){
+    plot_sup_precip_mean_cpt <-
+      ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+      geom_line() +
+      geom_point(colour = "black", size = 0.5) +
+      labels + title + theme(plot.title = element_text(hjust = 0.5))
+    return(plot_sup_precip_mean_cpt)
+  }
+  
+  
   reference_mean_cpt <-
     mean(annual_sum$Median[annual_sum$Year < split_year])
   reference_stderror_cpt <-
@@ -550,8 +563,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = get_labs(lake_name, balance_component)
-  title = get_title(lake_name, balance_component)
+
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -879,7 +891,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = set1979_func
 # func = rollmean_func
 # func = mean_stderror_func
-# func = cpt_stderror_func
+func = cpt_stderror_func
 # func = cpt_multiple_func
 # 
 # func("Superior", "Precipitation")
