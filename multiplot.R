@@ -919,7 +919,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
     res = ggplot(data1, aes(x = Year, y = Median)) + 
       geom_line() +
       geom_point(colour = "black", size = 0.5) +
-      geom_line(aes(x = Year, y = fit), color = 'blue') +
+      geom_line(aes(x = Year, y = fit), color = 'red') +
       labels + title + theme(plot.title = element_text(hjust = 0.5)) 
     return(res)
   }

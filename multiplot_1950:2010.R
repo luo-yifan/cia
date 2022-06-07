@@ -308,7 +308,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   annual_97.5 <-
     aggregate(X97.5.Percentile ~ Year , data = sup_precip_2010 , sum)
   
-  sup_precip.ts <-
+  sup_precip_2010.ts <-
     ts(annual_sum$Median,
        start = c(1950),
        end = c(2010))
