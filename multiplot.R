@@ -115,7 +115,7 @@ uncertainty_mm_func <- function(lake_name, balance_component) {
   return(plot_sup_precip_uncertainty_mm)
 }
 
-mean_func <- function(lake_name, balance_component) {
+mean_func <- function(lake_name, balance_component, ymin, ymax) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
@@ -164,7 +164,8 @@ mean_func <- function(lake_name, balance_component) {
       y = reference_mean,
       yend = reference_mean
     ),
-    data = annual_sum)
+    data = annual_sum) +
+    scale_y_continuous(limits = c(ymin, ymax))
   return(plot_sup_precip_mean)
 }
 
@@ -869,7 +870,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 
 # func = uncertainty_percent_func
 # func = uncertainty_mm_func
-# func = mean_func
+func = mean_func
 # func = cpt_func
 # func = mean_ci_func
 # func = cpt_ci_func
@@ -885,22 +886,22 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func("Superior", "Precipitation")
 
 ggarrange(
-  func("Superior", "Precipitation"),
-  func("MichiganHuron", "Precipitation"),
-  func("Erie", "Precipitation"),
-  func("Ontario", "Precipitation"),
-  func("Superior", "Evaporation"),
-  func("MichiganHuron", "Evaporation"),
-  func("Ontario", "Evaporation"),
-  func("Erie", "Evaporation"),
-  func("Superior", "Runoff"),
-  func("MichiganHuron", "Runoff"),
-  func("Erie", "Runoff"),
-  func("Ontario", "Runoff"),
-  func("Superior", "Outflow"),
-  func("MichiganHuron", "Outflow"),
-  func("Erie", "Outflow"),
-  func("Ontario", "Outflow"),
+  func("Superior", "Precipitation",600,1200),
+  func("MichiganHuron", "Precipitation",600,1200),
+  func("Erie", "Precipitation",600,1200),
+  func("Ontario", "Precipitation",600,1200),
+  func("Superior", "Evaporation",400,1100),
+  func("MichiganHuron", "Evaporation",400,1100),
+  func("Ontario", "Evaporation",400,1100),
+  func("Erie", "Evaporation",400,1100),
+  func("Superior", "Runoff",500,2500),
+  func("MichiganHuron", "Runoff",500,2500),
+  func("Erie", "Runoff",500,2500),
+  func("Ontario", "Runoff",500,2500),
+  func("Superior", "Outflow",20000,100000),
+  func("MichiganHuron", "Outflow",20000,100000),
+  func("Erie", "Outflow",20000,100000),
+  func("Ontario", "Outflow",20000,100000),
   ncol = 4,
   nrow = 4
 )
