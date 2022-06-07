@@ -15,11 +15,26 @@ library(cpm)
 library(EnvCpt)
 library(reshape2)
 
-theme_set(theme_grey())
+theme_set(theme_bw())
 setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
 balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+
+get_labs = function(lake_name, balance_component){
+  label = if (lake_name == "Superior")
+    labs(y = balance_component, x = NULL)
+  else
+    labs(y = NULL, x = NULL)
+  return(label)
+}
+get_title = function(lake_name, balance_component){
+  title = if (balance_component == "Precipitation")
+    ggtitle(lake_name)
+  else
+    NULL
+  return(title)
+}
 
 func <- function(lake_name, balance_component) {
   
@@ -41,47 +56,50 @@ func <- function(lake_name, balance_component) {
   sup_precip$formated_date <-
     format(as.Date(sup_precip$yearmon), "%m/%Y")
   
-  sup_precip_before_1979 <- sup_precip[which(sup_precip$Year <= 1979), ]
-  sup_precip_after_1979 <- sup_precip[which(sup_precip$Year > 1979), ]
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  sup_precip_before_1979 <- sup_precip[which(sup_precip$Year < 1979), ]
+  sup_precip_after_1979 <- sup_precip[which(sup_precip$Year >= 1979), ]
   month_mean_before_1979 <- aggregate(Median ~ Month , data = sup_precip_before_1979 , mean)
   month_mean_after_1979 <- aggregate(Median ~ Month , data = sup_precip_after_1979 , mean)
   
   df <- data.frame(Month=1:12,
-                   Y1950_1979=month_mean_before_1979$Median,
-                   Y1980_2021=month_mean_after_1979$Median)
-  df <- melt(df,  id.vars ='Month',variable.name = 'years')
+                   MonthlyMean1950_1979=month_mean_before_1979$Median,
+                   MonthlyMean1980_2021=month_mean_after_1979$Median)
+  df <- melt(df,  id.vars ='Month',variable.name = 'TimePeriod')
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  # labels = if (balance_component == "Precipitation")
+  #   labs(y = lake_name, x = NULL)
+  # else
+  #   labs(y = NULL, x = NULL)
+  # title = if (lake_name == "Superior")
+  #   ggtitle(balance_component)
+  # else
+  #   NULL
   
   ggplot(df, aes(Month, value)) +
-    geom_line(aes(colour = years)) +
+    geom_line(aes(colour = TimePeriod)) +
     scale_x_continuous(breaks = month_numeric, labels = month_label) +
     labels + title + theme(plot.title = element_text(hjust = 0.5)) 
 }
 
 ggarrange(
   func("Superior", "Precipitation"),
-  func("Superior", "Evaporation"),
-  func("Superior", "Runoff"),
-  func("Superior", "Outflow"),
   func("MichiganHuron", "Precipitation"),
-  func("MichiganHuron", "Evaporation"),
-  func("MichiganHuron", "Runoff"),
-  func("MichiganHuron", "Outflow"),
   func("Erie", "Precipitation"),
-  func("Erie", "Evaporation"),
-  func("Erie", "Runoff"),
-  func("Erie", "Outflow"),
   func("Ontario", "Precipitation"),
+  func("Superior", "Evaporation"),
+  func("MichiganHuron", "Evaporation"),
   func("Ontario", "Evaporation"),
+  func("Erie", "Evaporation"),
+  func("Superior", "Runoff"),
+  func("MichiganHuron", "Runoff"),
+  func("Erie", "Runoff"),
   func("Ontario", "Runoff"),
+  func("Superior", "Outflow"),
+  func("MichiganHuron", "Outflow"),
+  func("Erie", "Outflow"),
   func("Ontario", "Outflow"),
   ncol = 4,
   nrow = 4,

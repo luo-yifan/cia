@@ -14,11 +14,12 @@ library(strucchange)
 library(cpm)
 library(EnvCpt)
 
-theme_set(theme_grey())
+theme_set(theme_bw())
 setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
 balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+
 get_labs = function(lake_name, balance_component){
   label = if (lake_name == "Superior")
     labs(y = balance_component, x = NULL)
@@ -33,6 +34,7 @@ get_title = function(lake_name, balance_component){
     NULL
   return(title)
 }
+
 uncertainty_percent_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
@@ -63,7 +65,7 @@ uncertainty_percent_func <- function(lake_name, balance_component) {
     ggplot(data = sup_precip, aes(x = abs(Median), y = uncertainty_percent)) +
     # geom_line() +
     geom_smooth(method = 'loess',
-                color = "red",
+                colour = "red",
                 size = 0.5) +
     geom_point(colour = "black", size = 0.5) +
     labels +
@@ -104,7 +106,7 @@ uncertainty_mm_func <- function(lake_name, balance_component) {
     # geom_line() +
     geom_point(colour = "black", size = 0.5) +
     geom_smooth(method = 'loess',
-                color = "red",
+                colour = "red",
                 size = 0.5) +
     labels +
     title +
@@ -221,7 +223,7 @@ mean_ci_func <- function(lake_name, balance_component) {
       aes(ymin = low, ymax = high),
       alpha = 0.1,
       linetype = "dashed",
-      color = "grey"
+      colour = "grey"
     ) +
     geom_segment(aes(
       x = 1979,
@@ -301,7 +303,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
       aes(ymin = low, ymax = high),
       alpha = 0.1,
       linetype = "dashed",
-      color = "grey"
+      colour = "grey"
     ) +
     geom_segment(aes(
       x = 1979,
@@ -458,7 +460,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
       aes(ymin = low, ymax = high),
       alpha = 0.1,
       linetype = "dashed",
-      color = "grey"
+      colour = "grey"
     ) +
     geom_segment(aes(
       x = split_year,
@@ -556,7 +558,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
       aes(ymin = low, ymax = high),
       alpha = 0.1,
       linetype = "dashed",
-      color = "grey"
+      colour = "grey"
     ) +
     geom_segment(aes(
       x = split_year,
@@ -612,7 +614,7 @@ smooth_func <- function(lake_name, balance_component) {
     geom_line() +
     geom_point(colour = "black", size = 0.5) +
     labels + title + theme(plot.title = element_text(hjust = 0.5)) +
-    geom_smooth(color = "black", size = 0.5)
+    geom_smooth(colour = "red", size = 0.5)
   plot_sup_precip_smoothmean
   
   return(plot_sup_precip_smoothmean)
@@ -661,7 +663,7 @@ hockeystick_func <- function(lake_name, balance_component) {
   
   ggplot(dati, aes(x = x, y = y)) +
     geom_line() +
-    geom_line(data = dat2, color = 'red') +
+    geom_line(data = dat2, colour = 'red') +
     geom_point(colour = "black", size = 0.5) +
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
@@ -804,13 +806,13 @@ rollmean_func <- function(lake_name, balance_component) {
     geom_line() +
     geom_point(size = 0.5) +
     geom_line(aes(y = ten_avg),
-              color = "red",
+              colour = "red",
               size = .75) +
     geom_ribbon(
       aes(ymin = ten_avg + ten_sd, ymax = ten_avg - ten_sd),
       alpha = 0.1,
       linetype = "dashed",
-      color = "grey"
+      colour = "grey"
     ) +
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
@@ -846,7 +848,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
     res = ggplot(data1, aes(x = Year, y = Median)) + 
       geom_line() +
       geom_point(colour = "black", size = 0.5) +
-      geom_line(aes(x = Year, y = fit), color = 'red') +
+      geom_line(aes(x = Year, y = fit), colour = 'red') +
       labels + title + theme(plot.title = element_text(hjust = 0.5)) 
     return(res)
   }
@@ -859,13 +861,13 @@ cpt_multiple_func <- function(lake_name, balance_component) {
   }
 }
 
-func = uncertainty_percent_func
+# func = uncertainty_percent_func
 # func = uncertainty_mm_func
 # func = mean_func
 # func = cpt_func
-# func = smooth_func
 # func = mean_ci_func
 # func = cpt_ci_func
+func = smooth_func
 # func = hockeystick_func
 # func = autodetect_func
 # func = set1979_func
