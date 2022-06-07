@@ -566,6 +566,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
+    colour = "red",
     data = annual_sum) +
     geom_segment(
       aes(
@@ -574,6 +575,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
         y = reference_mean_cpt,
         yend = reference_mean_cpt
       ),
+      colour = "red",
       data = annual_sum
     )
   
@@ -867,7 +869,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = cpt_func
 # func = mean_ci_func
 # func = cpt_ci_func
-func = smooth_func
+# func = smooth_func
 # func = hockeystick_func
 # func = autodetect_func
 # func = set1979_func
@@ -875,6 +877,8 @@ func = smooth_func
 # func = mean_stderror_func
 # func = cpt_stderror_func
 # func = cpt_multiple_func 
+
+# func("Superior", "Precipitation")
 
 ggarrange(
   func("Superior", "Precipitation"),

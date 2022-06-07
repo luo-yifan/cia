@@ -84,6 +84,8 @@ func <- function(lake_name, balance_component) {
     labels + title + theme(plot.title = element_text(hjust = 0.5)) 
 }
 
+# func("Superior", "Precipitation")
+
 ggarrange(
   func("Superior", "Precipitation"),
   func("MichiganHuron", "Precipitation"),
