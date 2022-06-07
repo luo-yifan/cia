@@ -11,7 +11,7 @@ library(segmented)
 library(SiZer)
 library(plotrix)
 
-theme_set(theme_grey())
+theme_set(theme_bw())
 setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
@@ -371,6 +371,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
+    colour = "red",
     data = annual_sum) +
     geom_segment(
       aes(
@@ -379,6 +380,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
         y = reference_mean_cpt,
         yend = reference_mean_cpt
       ),
+      colour = "red",
       data = annual_sum
     )
   
@@ -554,7 +556,9 @@ set1979_func <- function(lake_name, balance_component) {
 # func = set1979_func
 # func = rollmean_func
 # func = mean_stderror_func
-func = cpt_stderror_func
+# func = cpt_stderror_func
+# 
+# func("Superior", "Precipitation")
 
 ggarrange(
   func("Superior", "Precipitation"),
