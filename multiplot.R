@@ -19,7 +19,20 @@ setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
 balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
-
+get_labs = function(lake_name, balance_component){
+  label = if (lake_name == "Superior")
+    labs(y = balance_component, x = NULL)
+  else
+    labs(y = NULL, x = NULL)
+  return(label)
+}
+get_title = function(lake_name, balance_component){
+  title = if (balance_component == "Precipitation")
+    ggtitle(lake_name)
+  else
+    NULL
+  return(title)
+}
 uncertainty_percent_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
@@ -43,14 +56,8 @@ uncertainty_percent_func <- function(lake_name, balance_component) {
   sup_precip <- sup_precip %>%
     mutate(uncertainty_percent = (abs(X97.5.Percentile - Median)) / abs(Median))
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_uncertainty_percent <-
     ggplot(data = sup_precip, aes(x = abs(Median), y = uncertainty_percent)) +
@@ -89,14 +96,8 @@ uncertainty_mm_func <- function(lake_name, balance_component) {
   sup_precip <- sup_precip %>%
     mutate(uncertainty_mm = X97.5.Percentile - Median)
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_uncertainty_mm <-
     ggplot(data = sup_precip, aes(x = Median, y = uncertainty_mm)) +
@@ -138,14 +139,8 @@ mean_func <- function(lake_name, balance_component) {
   recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -214,14 +209,8 @@ mean_ci_func <- function(lake_name, balance_component) {
                recent_mean + recent_sd
              ))
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -300,14 +289,8 @@ mean_stderror_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_mean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -378,14 +361,8 @@ cpt_func <- function(lake_name, balance_component) {
   recent_sd_cpt <-
     sd(annual_sum$Median[annual_sum$Year >= split_year])
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -469,14 +446,8 @@ cpt_ci_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -573,14 +544,8 @@ cpt_stderror_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_mean_cpt <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -639,14 +604,8 @@ smooth_func <- function(lake_name, balance_component) {
   recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_smoothmean <-
     ggplot(data = annual_sum, aes(x = Year, y = Median)) +
@@ -697,14 +656,8 @@ hockeystick_func <- function(lake_name, balance_component) {
   slope(o)
   dat2 <- data.frame(x = xx, y = broken.line(o)$fit)
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   ggplot(dati, aes(x = x, y = y)) +
     geom_line() +
@@ -747,14 +700,8 @@ autodetect_func <- function(lake_name, balance_component) {
   
   dati$grp = factor(ifelse(dati$x > model$change.point, 1, 0))
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   ggplot(dati, aes(x = x, y = y, group = grp)) +
     geom_line() +
@@ -798,14 +745,8 @@ set1979_func <- function(lake_name, balance_component) {
   
   dati$grp = factor(ifelse(dati$x >= 1979, 1, 0))
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   ggplot(dati, aes(x = x, y = y, group = grp)) +
     geom_line() +
@@ -846,16 +787,8 @@ rollmean_func <- function(lake_name, balance_component) {
   yy <- annual_sum$Median
   dati <- data.frame(x = xx, y = yy)
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
-  
-  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   dur = 20
   
@@ -898,14 +831,8 @@ cpt_multiple_func <- function(lake_name, balance_component) {
   
   annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
   
-  labels = if (balance_component == "Precipitation")
-    labs(y = lake_name, x = NULL)
-  else
-    labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
-    ggtitle(balance_component)
-  else
-    NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   library(segmented)
   fit_lm = lm(Median ~ 1 + Year, data = annual_sum)  # intercept-only model
@@ -932,7 +859,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
   }
 }
 
-# func = uncertainty_percent_func
+func = uncertainty_percent_func
 # func = uncertainty_mm_func
 # func = mean_func
 # func = cpt_func
@@ -945,24 +872,24 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = rollmean_func
 # func = mean_stderror_func
 # func = cpt_stderror_func
-func = cpt_multiple_func 
+# func = cpt_multiple_func 
 
 ggarrange(
   func("Superior", "Precipitation"),
-  func("Superior", "Evaporation"),
-  func("Superior", "Runoff"),
-  func("Superior", "Outflow"),
   func("MichiganHuron", "Precipitation"),
-  func("MichiganHuron", "Evaporation"),
-  func("MichiganHuron", "Runoff"),
-  func("MichiganHuron", "Outflow"),
   func("Erie", "Precipitation"),
-  func("Erie", "Evaporation"),
-  func("Erie", "Runoff"),
-  func("Erie", "Outflow"),
   func("Ontario", "Precipitation"),
+  func("Superior", "Evaporation"),
+  func("MichiganHuron", "Evaporation"),
   func("Ontario", "Evaporation"),
+  func("Erie", "Evaporation"),
+  func("Superior", "Runoff"),
+  func("MichiganHuron", "Runoff"),
+  func("Erie", "Runoff"),
   func("Ontario", "Runoff"),
+  func("Superior", "Outflow"),
+  func("MichiganHuron", "Outflow"),
+  func("Erie", "Outflow"),
   func("Ontario", "Outflow"),
   ncol = 4,
   nrow = 4
