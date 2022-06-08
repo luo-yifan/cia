@@ -8,17 +8,33 @@ library(changepoint)
 library(r2r)
 library(lubridate)
 
+theme_set(theme_bw())
 setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
-balance_component = c("Precipitation", "Evaporation", "Runoff"," Outflow")
+balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+
+get_labs = function(lake_name, balance_component){
+  label = if (lake_name == "Superior")
+    labs(y = balance_component, x = NULL)
+  else
+    labs(y = NULL, x = NULL)
+  return(label)
+}
+get_title = function(lake_name, balance_component){
+  title = if (balance_component == "Precipitation")
+    ggtitle(lake_name)
+  else
+    NULL
+  return(title)
+}
 
 uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   filename = paste(
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_precip <-
@@ -43,7 +59,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   
   # plot_sup_precip_mean <-
   #   ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-  #   geom_line(color = "red") +
+  #   geom_line(color = "red", size = 0.5) +
   #   labs(
   #     # title = "Lake Superior Annual Percipitation Comparison: 1950-1978 vs 1979-2019",
   #        y = "(mm)",
@@ -90,7 +106,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   # 
   # plot_sup_precip_mean_cpt <-
   #   ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-  #   geom_line(color = "red") +
+  #   geom_line(color = "red", size = 0.5) +
   #   labs(
   #     # title = "Lake Superior Annual Percipitation Comparison: 1950-2011 vs 2012-2019",
   #        y = "mm",
@@ -116,7 +132,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   
   # plot_sup_precip_smoothmean <-
   #   ggplot(data = annual_sum, aes(x = Year, y = Median)) +
-  #   geom_line(color = "red") +
+  #   geom_line(color = "red", size = 0.5) +
   #   labs(y = "mm",
   #        x = "Year") +
   #   geom_smooth(color = "black", size = 0.5)
@@ -134,7 +150,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   #   labs(title = "Uncertainty of Lake Superior Percipitation from Neff and Nicholas Paper (15%)",
   #        y = "mm",
   #        x = "Year") +
-  #   geom_line(color = "red")
+  #   geom_line(color = "red", size = 0.5)
   # plot_sup_precip_usgserror_low
   # 
   # plot_sup_precip_usgserror_high <-
@@ -148,13 +164,11 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   #   labs(title = "Uncertainty of Lake Superior Percipitation from Neff and Nicholas Paper (45%)",
   #        y = "mm",
   #        x = "Year") +
-  #   geom_line(color = "red")
+  #   geom_line(color = "red", size = 0.5)
   # plot_sup_precip_usgserror_high
   
-  # labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  # title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_l2serror_usgshigh <-
     ggplot(data = annual_sum,
@@ -169,11 +183,11 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
       ymax = annual_97.5$X97.5.Percentile
     ),
     fill = "yellow", alpha=0.3) +
-    labs(
-      # title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
-      y = "mm",
-      x = "Year") +
-    geom_line(color = "red")+
+    # labs(
+    #   # title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
+    #   y = "mm",
+    #   x = "Year") +
+    geom_line(color = "red", size = 0.5)+
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
   plot_sup_precip_l2serror_usgshigh
  
@@ -194,7 +208,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   #     # title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
   #     y = "mm",
   #     x = "Year") +
-  #   geom_line(color = "red")
+  #   geom_line(color = "red", size = 0.5)
   # plot_sup_precip_l2serror_usgslow
 }
 
@@ -203,7 +217,7 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_evap <-
@@ -220,8 +234,8 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
   annual_97.5 <-
     aggregate(X97.5.Percentile ~ Year , data = sup_evap , sum)
   
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_evap_l2serror_usgshigh <-
     ggplot(data = annual_sum,
@@ -236,7 +250,7 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
       ymax = annual_97.5$X97.5.Percentile
     ),
     fill = "yellow", alpha=0.3) +
-    geom_line(color = "red")+
+    geom_line(color = "red", size = 0.5)+
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
   plot_sup_evap_l2serror_usgshigh
 
@@ -257,7 +271,7 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
   #     # title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
   #     y = "mm",
   #     x = "Year") +
-  #   geom_line(color = "red")
+  #   geom_line(color = "red", size = 0.5)
   # plot_sup_evap_l2serror_usgslow
 }
 
@@ -266,7 +280,7 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_runoff <-
@@ -283,8 +297,8 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
   annual_97.5 <-
     aggregate(X97.5.Percentile ~ Year , data = sup_runoff , sum)
   
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_runoff_l2serror_usgshigh <-
     ggplot(data = annual_sum,
@@ -299,7 +313,7 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
       ymax = annual_97.5$X97.5.Percentile
     ),
     fill = "yellow", alpha=0.3) +
-    geom_line(color = "red")+
+    geom_line(color = "red", size = 0.5)+
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
   plot_sup_runoff_l2serror_usgshigh
   
@@ -320,7 +334,7 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
   #     # title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
   #     y = "mm",
   #     x = "Year") +
-  #   geom_line(color = "red")
+  #   geom_line(color = "red", size = 0.5)
   # plot_sup_runoff_l2serror_usgslow
 }  
   
@@ -329,7 +343,7 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_outflow <-
@@ -346,8 +360,8 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
   annual_97.5 <-
     aggregate(X97.5.Percentile ~ Year , data = sup_outflow , sum)
   
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_outflow_l2serror_usgshigh <-
     ggplot(data = annual_sum,
@@ -362,7 +376,7 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
       ymax = annual_97.5$X97.5.Percentile
     ),
     fill = "yellow", alpha=0.3) +
-    geom_line(color = "red")+
+    geom_line(color = "red", size = 0.5)+
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
   plot_sup_outflow_l2serror_usgshigh
   
@@ -383,38 +397,40 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
   #     # title = "Uncertainty of Lake Superior Percipitation L2SWBM Model (95% Confidence Interval)",
   #     y = "mm",
   #     x = "Year") +
-  #   geom_line(color = "red")
+  #   geom_line(color = "red", size = 0.5)
   # plot_sup_outflow_l2serror_usgslow
 }  
 
 # lake_names = c("Superior", "MichiganHuron", "Erie")
 # balance_components = c("Precipitation", "Evaporation", "Runoff")
 
-func = uncertainty_compare_func_precip
+# uncertainty_compare_func_precip("Superior", "Precipitation")
+
 ggarrange(
   uncertainty_compare_func_precip("Superior", "Precipitation"),
-  uncertainty_compare_func_evap("Superior", "Evaporation"),
-  uncertainty_compare_func_runoff("Superior", "Runoff"),
-  uncertainty_compare_func_outflow("Superior", "Outflow"),
-  
   uncertainty_compare_func_precip("MichiganHuron", "Precipitation"),
-  uncertainty_compare_func_evap("MichiganHuron", "Evaporation"),
-  uncertainty_compare_func_runoff("MichiganHuron", "Runoff"),
-  uncertainty_compare_func_outflow("MichiganHuron", "Outflow"),
-  
   uncertainty_compare_func_precip("Erie", "Precipitation"),
-  uncertainty_compare_func_evap("Erie", "Evaporation"),
-  uncertainty_compare_func_runoff("Erie", "Runoff"),
-  uncertainty_compare_func_outflow("Erie", "Outflow"),
-  
   uncertainty_compare_func_precip("Ontario", "Precipitation"),
+  
+  uncertainty_compare_func_evap("Superior", "Evaporation"),
+  uncertainty_compare_func_evap("MichiganHuron", "Evaporation"),
   uncertainty_compare_func_evap("Ontario", "Evaporation"),
+  uncertainty_compare_func_evap("Erie", "Evaporation"),
+  
+  uncertainty_compare_func_runoff("Superior", "Runoff"),
+  uncertainty_compare_func_runoff("MichiganHuron", "Runoff"),
+  uncertainty_compare_func_runoff("Erie", "Runoff"),
   uncertainty_compare_func_runoff("Ontario", "Runoff"),
+  
+  uncertainty_compare_func_outflow("Superior", "Outflow"),
+  uncertainty_compare_func_outflow("MichiganHuron", "Outflow"),
+  uncertainty_compare_func_outflow("Erie", "Outflow"),
   uncertainty_compare_func_outflow("Ontario", "Outflow"),
   
   ncol = 4,
   nrow = 4
 )
+
 
 # func = uncertainty_compare_func_evap
 # ggarrange(

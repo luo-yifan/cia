@@ -35,11 +35,158 @@ get_title = function(lake_name, balance_component){
   return(title)
 }
 
+raw_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_2019.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  reference_mean <-
+    mean(annual_sum$Median[annual_sum$Year < 1979])
+  reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
+  recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+  recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  plot_sup_precip_mean <-
+    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labels +
+    title +
+    theme(plot.title = element_text(hjust = 0.5))
+    #  + geom_segment(aes(
+    #   x = 1979,
+    #   xend = 2019,
+    #   y = recent_mean,
+    #   yend = recent_mean
+    # ),
+    # data = annual_sum) +
+    # geom_segment(aes(
+    #   x = 1950,
+    #   xend = 1979,
+    #   y = reference_mean,
+    #   yend = reference_mean
+    # ),
+    # data = annual_sum)
+  return(plot_sup_precip_mean)
+}
+
+fixed_yrange_func <- function(lake_name, balance_component, ymin, ymax) {
+    filename = paste("./l2s_posterior/",
+                     lake_name,
+                     balance_component,
+                     "_2019.csv",
+                     sep = "")
+    sup_precip <-
+      read.csv(filename)
+    str(sup_precip)
+    sup_precip$yearmon <-
+      as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+    sup_precip$formated_date <-
+      format(as.Date(sup_precip$yearmon), "%m/%Y")
+    
+    annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+    annual_2.5 <-
+      aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+    annual_97.5 <-
+      aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+    
+    reference_mean <-
+      mean(annual_sum$Median[annual_sum$Year < 1979])
+    reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
+    recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+    recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
+    
+    labels = get_labs(lake_name, balance_component)
+    title = get_title(lake_name, balance_component)
+    
+    plot_sup_precip_mean <-
+      ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+      geom_line() +
+      geom_point(colour = "black", size = 0.5) +
+      labels +
+      title +
+      theme(plot.title = element_text(hjust = 0.5)) +
+      # geom_segment(aes(
+      #   x = 1979,
+      #   xend = 2019,
+      #   y = recent_mean,
+      #   yend = recent_mean
+      # ),
+      # data = annual_sum) +
+      # geom_segment(aes(
+      #   x = 1950,
+      #   xend = 1979,
+      #   y = reference_mean,
+      #   yend = reference_mean
+      # ),
+      # data = annual_sum) +
+      scale_y_continuous(limits = c(ymin, ymax))
+    return(plot_sup_precip_mean)
+  }
+
+linear_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_2019.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  reference_mean <-
+    mean(annual_sum$Median[annual_sum$Year < 1979])
+  reference_sd <- sd(annual_sum$Median[annual_sum$Year < 1979])
+  recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
+  recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  plot_sup_precip_smoothmean <-
+    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) +
+    geom_smooth(method='lm', colour = "red", size = 0.5)
+  plot_sup_precip_smoothmean
+  
+  return(plot_sup_precip_smoothmean)
+}
+
 uncertainty_percent_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -79,7 +226,7 @@ uncertainty_mm_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -119,7 +266,7 @@ mean_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -153,7 +300,7 @@ mean_func <- function(lake_name, balance_component) {
     theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = 1979,
-      xend = 2021,
+      xend = 2019,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -172,7 +319,7 @@ mean_ci_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -227,7 +374,7 @@ mean_ci_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = 1979,
-      xend = 2021,
+      xend = 2019,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -246,7 +393,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -307,11 +454,11 @@ mean_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = 1979,
-      xend = 2021,
+      xend = 2019,
       y = recent_mean,
       yend = recent_mean
     ),
-    colour = "red",
+    colour = "red", size = 0.5,
     data = annual_sum) +
     geom_segment(aes(
       x = 1950,
@@ -319,7 +466,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
       y = reference_mean,
       yend = reference_mean
     ),
-    colour = "red",
+    colour = "red", size = 0.5,
     data = annual_sum)
   return(plot_sup_precip_mean)
 }
@@ -328,7 +475,7 @@ cpt_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -352,7 +499,7 @@ cpt_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2021))
+       end = c(2019))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -375,11 +522,11 @@ cpt_func <- function(lake_name, balance_component) {
     labels + title + theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = split_year,
-      xend = 2021,
+      xend = 2019,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
-    colour = "red",
+    colour = "red", size = 0.5,
     data = annual_sum) +
     geom_segment(
       aes(
@@ -398,7 +545,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -417,7 +564,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2021))
+       end = c(2019))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -467,11 +614,11 @@ cpt_ci_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2021,
+      xend = 2019,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
-    colour = "red",
+    colour = "red", size = 0.5,
     data = annual_sum) +
     geom_segment(
       aes(
@@ -486,11 +633,323 @@ cpt_ci_func <- function(lake_name, balance_component) {
   return(plot_sup_precip_mean_cpt)
 }
 
+cpt_stderror_2010_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_2019.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  sup_precip_2010 <- sup_precip[which(sup_precip$Year <= 2010), ]
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip_2010 , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip_2010 , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip_2010 , sum)
+  
+  sup_precip_2010.ts <-
+    ts(annual_sum$Median,
+       start = c(1950),
+       end = c(2010))
+  year_index = cpts(cpt.mean(sup_precip_2010.ts))
+  split_year = annual_sum[year_index, ]$Year
+  
+  reference_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year < split_year])
+  reference_stderror_cpt <-
+    std.error(annual_sum$Median[annual_sum$Year < split_year])
+  recent_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year >= split_year])
+  recent_stderror_cpt <-
+    std.error(annual_sum$Median[annual_sum$Year >= split_year])
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      low =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt - reference_stderror_cpt,
+          recent_mean_cpt - recent_stderror_cpt
+        )
+    )
+  
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      high =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt + reference_stderror_cpt,
+          recent_mean_cpt + recent_stderror_cpt
+        )
+    )
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  plot_sup_precip_2010_mean_cpt <-
+    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) +
+    geom_ribbon(
+      aes(ymin = low, ymax = high),
+      alpha = 0.1,
+      linetype = "dashed",
+      color = "grey"
+    ) +
+    geom_segment(aes(
+      x = split_year,
+      xend = 2010,
+      y = recent_mean_cpt,
+      yend = recent_mean_cpt
+    ),
+    colour = "red", size = 0.5,
+    data = annual_sum) +
+    geom_segment(
+      aes(
+        x = 1950,
+        xend = split_year,
+        y = reference_mean_cpt,
+        yend = reference_mean_cpt
+      ),
+      colour = "red", size = 0.5,
+      data = annual_sum
+    )
+  
+  return(plot_sup_precip_2010_mean_cpt)
+}
+
+cpt_stderror_omit5y_2010_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_2019.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  sup_precip_2010 <- sup_precip[which(sup_precip$Year <= 2010), ]
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip_2010 , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip_2010 , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip_2010 , sum)
+  
+  sup_precip_2010.ts <-
+    ts(annual_sum$Median,
+       start = c(1950),
+       end = c(2010))
+  year_index = cpts(cpt.mean(sup_precip_2010.ts))
+  split_year = annual_sum[year_index, ]$Year
+  
+  # library(cpm)
+  # fit_cpm = processStream(annual_sum$Median, cpmType = "Mann-Whitney")  # Multiple change points
+  # fit_cpm$changePoints
+  # split_year = fit_cpm$changePoints + 1950
+  
+  split_year = annual_sum[year_index, ]$Year
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  if(split_year - 1950 <=5 || 2010 - split_year <= 5){
+    plot_sup_precip_mean_cpt <-
+      ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+      geom_line() +
+      geom_point(colour = "black", size = 0.5) +
+      labels + title + theme(plot.title = element_text(hjust = 0.5))
+    return(plot_sup_precip_mean_cpt)
+  }
+  
+  
+  reference_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year < split_year])
+  reference_stderror_cpt <-
+    std.error(annual_sum$Median[annual_sum$Year < split_year])
+  recent_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year >= split_year])
+  recent_stderror_cpt <-
+    std.error(annual_sum$Median[annual_sum$Year >= split_year])
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      low =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt - reference_stderror_cpt,
+          recent_mean_cpt - recent_stderror_cpt
+        )
+    )
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      high =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt + reference_stderror_cpt,
+          recent_mean_cpt + recent_stderror_cpt
+        )
+    )
+  
+  
+  
+  plot_sup_precip_mean_cpt <-
+    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) +
+    geom_ribbon(
+      aes(ymin = low, ymax = high),
+      alpha = 0.1,
+      linetype = "dashed",
+      colour = "grey"
+    ) +
+    geom_segment(aes(
+      x = split_year,
+      xend = 2010,
+      y = recent_mean_cpt,
+      yend = recent_mean_cpt
+    ),
+    colour = "red", size = 0.5,
+    data = annual_sum) +
+    geom_segment(
+      aes(
+        x = 1950,
+        xend = split_year,
+        y = reference_mean_cpt,
+        yend = reference_mean_cpt
+      ),
+      colour = "red", size = 0.5,
+      data = annual_sum
+    )
+  
+  return(plot_sup_precip_mean_cpt)
+}
+
 cpt_stderror_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  # sup_precip_2010 <- sup_precip[which(sup_precip$Year <= 2010), ]
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  sup_precip.ts <-
+    ts(annual_sum$Median,
+       start = c(1950),
+       end = c(2019))
+  year_index = cpts(cpt.mean(sup_precip.ts))
+  split_year = annual_sum[year_index, ]$Year
+  
+  reference_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year < split_year])
+  reference_stderror_cpt <-
+    std.error(annual_sum$Median[annual_sum$Year < split_year])
+  recent_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year >= split_year])
+  recent_stderror_cpt <-
+    std.error(annual_sum$Median[annual_sum$Year >= split_year])
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      low =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt - reference_stderror_cpt,
+          recent_mean_cpt - recent_stderror_cpt
+        )
+    )
+  
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      high =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt + reference_stderror_cpt,
+          recent_mean_cpt + recent_stderror_cpt
+        )
+    )
+  
+  # labels = if (balance_component == "Precipitation")
+  #   labs(y = lake_name, x = NULL)
+  # else
+  #   labs(y = NULL, x = NULL)
+  # title = if (lake_name == "Superior")
+  #   ggtitle(balance_component)
+  # else
+  #   NULL
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  plot_sup_precip_mean_cpt <-
+    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) +
+    geom_ribbon(
+      aes(ymin = low, ymax = high),
+      alpha = 0.1,
+      linetype = "dashed",
+      color = "grey"
+    ) +
+    geom_segment(aes(
+      x = split_year,
+      xend = 2019,
+      y = recent_mean_cpt,
+      yend = recent_mean_cpt
+    ),
+    colour = "red", size = 0.5,
+    data = annual_sum) +
+    geom_segment(
+      aes(
+        x = 1950,
+        xend = split_year,
+        y = reference_mean_cpt,
+        yend = reference_mean_cpt
+      ),
+      colour = "red", size = 0.5,
+      data = annual_sum
+    )
+  
+  return(plot_sup_precip_mean_cpt)
+}
+
+cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -511,7 +970,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2021))
+       end = c(2019))
   year_index = cpts(cpt.mean(sup_precip.ts))
 
   # library(cpm)
@@ -524,7 +983,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   labels = get_labs(lake_name, balance_component)
   title = get_title(lake_name, balance_component)
   
-  if(split_year - 1950 <=5 || 2021 - split_year <= 5){
+  if(split_year - 1950 <=5 || 2019 - split_year <= 5){
     plot_sup_precip_mean_cpt <-
       ggplot(data = annual_sum, aes(x = Year, y = Median)) +
       geom_line() +
@@ -578,11 +1037,11 @@ cpt_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2021,
+      xend = 2019,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
-    colour = "red",
+    colour = "red", size = 0.5,
     data = annual_sum) +
     geom_segment(
       aes(
@@ -591,7 +1050,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
         y = reference_mean_cpt,
         yend = reference_mean_cpt
       ),
-      colour = "red",
+      colour = "red", size = 0.5,
       data = annual_sum
     )
   
@@ -602,7 +1061,7 @@ smooth_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -642,7 +1101,7 @@ hockeystick_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -690,7 +1149,7 @@ autodetect_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -727,7 +1186,7 @@ autodetect_func <- function(lake_name, balance_component) {
     geom_line() +
     geom_point(size = 0.5) + geom_smooth(method = "lm",
                                          formula = y ~ x,
-                                         col = "red") +
+                                         colour = "red", size = 0.5) +
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
@@ -735,7 +1194,7 @@ set1979_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -772,7 +1231,7 @@ set1979_func <- function(lake_name, balance_component) {
     geom_line() +
     geom_point(size = 0.5) + geom_smooth(method = "lm",
                                          formula = y ~ x,
-                                         col = "red") +
+                                         colour = "red", size = 0.5) +
     labels + title  + theme(plot.title = element_text(hjust = 0.5))
 }
 
@@ -780,7 +1239,7 @@ rollmean_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -824,8 +1283,7 @@ rollmean_func <- function(lake_name, balance_component) {
     geom_line() +
     geom_point(size = 0.5) +
     geom_line(aes(y = ten_avg),
-              colour = "red",
-              size = .75) +
+              colour = "red", size = 0.5) +
     geom_ribbon(
       aes(ymin = ten_avg + ten_sd, ymax = ten_avg - ten_sd),
       alpha = 0.1,
@@ -839,7 +1297,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_2019.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -891,8 +1349,14 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = set1979_func
 # func = rollmean_func
 # func = mean_stderror_func
-func = cpt_stderror_func
+# func = cpt_stderror_2010_func
+# func = cpt_stderror_omit5y_2010_func
+# func = cpt_stderror_func
+# func = cpt_stderror_omit5y_func
 # func = cpt_multiple_func
+# func = fixed_yrange_func
+# func = raw_func
+# func = linear_func
 # 
 # func("Superior", "Precipitation")
 
@@ -917,5 +1381,25 @@ ggarrange(
   nrow = 4
 )
 
+# ggarrange(
+#   func("Superior", "Precipitation",600,1150),
+#   func("MichiganHuron", "Precipitation",600,1150),
+#   func("Erie", "Precipitation",600,1150),
+#   func("Ontario", "Precipitation",600,1150),
+#   func("Superior", "Evaporation",300,1100),
+#   func("MichiganHuron", "Evaporation",300,1100),
+#   func("Ontario", "Evaporation",300,1100),
+#   func("Erie", "Evaporation",300,1100),
+#   func("Superior", "Runoff",200,2500),
+#   func("MichiganHuron", "Runoff",200,2500),
+#   func("Erie", "Runoff",200,2500),
+#   func("Ontario", "Runoff",200,2500),
+#   func("Superior", "Outflow",15000,105000),
+#   func("MichiganHuron", "Outflow",15000,105000),
+#   func("Erie", "Outflow",15000,105000),
+#   func("Ontario", "Outflow",15000,105000),
+#   ncol = 4,
+#   nrow = 4
+# )
 
 

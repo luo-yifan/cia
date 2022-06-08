@@ -8,17 +8,34 @@ library(changepoint)
 library(r2r)
 library(lubridate)
 
+theme_set(theme_bw())
 setwd("./")
 
 lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
 balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+
+
+get_labs = function(lake_name, balance_component){
+  label = if (lake_name == "Superior")
+    labs(y = balance_component, x = NULL)
+  else
+    labs(y = NULL, x = NULL)
+  return(label)
+}
+get_title = function(lake_name, balance_component){
+  title = if (balance_component == "Precipitation")
+    ggtitle(lake_name)
+  else
+    NULL
+  return(title)
+}
 
 uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   filename = paste(
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_precip <-
@@ -29,14 +46,14 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   sup_precip$formated_date <-
     format(as.Date(sup_precip$yearmon), "%m/%Y")
   
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_precip_l2serror_usgshigh <-
     ggplot(data = sup_precip,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2021) +
+    xlim (2015, 2019) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.45),
                     ymax = Median * (1 + 0.45)), fill = "blue", alpha=0.3) +
@@ -60,7 +77,7 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_evap <-
@@ -70,15 +87,15 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
     as.yearmon(paste(sup_evap$Year, sup_evap$Month), "%Y %m")
   sup_evap$formated_date <-
     format(as.Date(sup_evap$yearmon), "%m/%Y")
-
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_evap_l2serror_usgshigh <-
     ggplot(data = sup_evap,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2021) +
+    xlim (2015, 2019) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.35),
                     ymax = Median * (1 + 0.35)), fill = "blue", alpha=0.3) +
@@ -102,7 +119,7 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_runoff <-
@@ -113,14 +130,14 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
   sup_runoff$formated_date <-
     format(as.Date(sup_runoff$yearmon), "%m/%Y")
   
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_runoff_l2serror_usgshigh <-
     ggplot(data = sup_runoff,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2021) +
+    xlim (2015, 2019) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.35),
                     ymax = Median * (1 + 0.35)), fill = "blue", alpha=0.3) +
@@ -144,7 +161,7 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
     "./l2s_posterior/",
     lake_name,
     balance_component,
-    "_GLWBData.csv",
+    "_2019.csv",
     sep = ""
   )
   sup_outflow <-
@@ -155,14 +172,14 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
   sup_outflow$formated_date <-
     format(as.Date(sup_outflow$yearmon), "%m/%Y")
   
-  labels = if (balance_component == "Precipitation")  labs(y = lake_name, x = NULL) else labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior") ggtitle(balance_component) else NULL
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
   
   plot_sup_outflow_l2serror_usgshigh <-
     ggplot(data = sup_outflow,
            aes(x = yearmon,
                y = Median)) +
-    xlim (2015, 2021) +
+    xlim (2015, 2019) +
     # ylim (0, 120) +
     geom_ribbon(aes(ymin = Median * (1 - 0.15),
                     ymax = Median * (1 + 0.15)), fill = "blue", alpha=0.3) +
@@ -181,27 +198,54 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
   plot_sup_outflow_l2serror_usgshigh
 }  
 
+# uncertainty_compare_func_precip("Superior", "Precipitation")
+
 ggarrange(
   uncertainty_compare_func_precip("Superior", "Precipitation"),
-  uncertainty_compare_func_evap("Superior", "Evaporation"),
-  uncertainty_compare_func_runoff("Superior", "Runoff"),
-  uncertainty_compare_func_outflow("Superior", "Outflow"),
-  
   uncertainty_compare_func_precip("MichiganHuron", "Precipitation"),
-  uncertainty_compare_func_evap("MichiganHuron", "Evaporation"),
-  uncertainty_compare_func_runoff("MichiganHuron", "Runoff"),
-  uncertainty_compare_func_outflow("MichiganHuron", "Outflow"),
-  
   uncertainty_compare_func_precip("Erie", "Precipitation"),
-  uncertainty_compare_func_evap("Erie", "Evaporation"),
-  uncertainty_compare_func_runoff("Erie", "Runoff"),
-  uncertainty_compare_func_outflow("Erie", "Outflow"),
-  
   uncertainty_compare_func_precip("Ontario", "Precipitation"),
+
+  uncertainty_compare_func_evap("Superior", "Evaporation"),
+  uncertainty_compare_func_evap("MichiganHuron", "Evaporation"),
   uncertainty_compare_func_evap("Ontario", "Evaporation"),
+  uncertainty_compare_func_evap("Erie", "Evaporation"),
+  
+  uncertainty_compare_func_runoff("Superior", "Runoff"),
+  uncertainty_compare_func_runoff("MichiganHuron", "Runoff"),
+  uncertainty_compare_func_runoff("Erie", "Runoff"),
   uncertainty_compare_func_runoff("Ontario", "Runoff"),
+  
+  uncertainty_compare_func_outflow("Superior", "Outflow"),
+  uncertainty_compare_func_outflow("MichiganHuron", "Outflow"),
+  uncertainty_compare_func_outflow("Erie", "Outflow"),
   uncertainty_compare_func_outflow("Ontario", "Outflow"),
   
   ncol = 4,
   nrow = 4
 )
+
+# ggarrange(
+#   uncertainty_compare_func_precip("Superior", "Precipitation"),
+#   uncertainty_compare_func_evap("Superior", "Evaporation"),
+#   uncertainty_compare_func_runoff("Superior", "Runoff"),
+#   uncertainty_compare_func_outflow("Superior", "Outflow"),
+#   
+#   uncertainty_compare_func_precip("MichiganHuron", "Precipitation"),
+#   uncertainty_compare_func_evap("MichiganHuron", "Evaporation"),
+#   uncertainty_compare_func_runoff("MichiganHuron", "Runoff"),
+#   uncertainty_compare_func_outflow("MichiganHuron", "Outflow"),
+#   
+#   uncertainty_compare_func_precip("Erie", "Precipitation"),
+#   uncertainty_compare_func_evap("Erie", "Evaporation"),
+#   uncertainty_compare_func_runoff("Erie", "Runoff"),
+#   uncertainty_compare_func_outflow("Erie", "Outflow"),
+#   
+#   uncertainty_compare_func_precip("Ontario", "Precipitation"),
+#   uncertainty_compare_func_evap("Ontario", "Evaporation"),
+#   uncertainty_compare_func_runoff("Ontario", "Runoff"),
+#   uncertainty_compare_func_outflow("Ontario", "Outflow"),
+#   
+#   ncol = 4,
+#   nrow = 4
+# )
