@@ -377,14 +377,14 @@ mean_ci_func <- function(lake_name, balance_component) {
       xend = 2019,
       y = recent_mean,
       yend = recent_mean
-    ),
+    ), colour = "red", size = 0.5,
     data = annual_sum) +
     geom_segment(aes(
       x = 1950,
       xend = 1979,
       y = reference_mean,
       yend = reference_mean
-    ),
+    ), colour = "red", size = 0.5,
     data = annual_sum)
   return(plot_sup_precip_mean)
 }
@@ -1057,6 +1057,118 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
   return(plot_sup_precip_mean_cpt)
 }
 
+cpt_sd_omit5y_func <- function(lake_name, balance_component) {
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_2019.csv",
+                   sep = "")
+  sup_precip <-
+    read.csv(filename)
+  str(sup_precip)
+  sup_precip$yearmon <-
+    as.yearmon(paste(sup_precip$Year, sup_precip$Month), "%Y %m")
+  sup_precip$formated_date <-
+    format(as.Date(sup_precip$yearmon), "%m/%Y")
+  
+  annual_sum <- aggregate(Median ~ Year , data = sup_precip , sum)
+  annual_2.5 <-
+    aggregate(X2.5.Percentile ~ Year , data = sup_precip , sum)
+  annual_97.5 <-
+    aggregate(X97.5.Percentile ~ Year , data = sup_precip , sum)
+  
+  # fit_bp = breakpoints(Median ~ 1, data = annual_sum, breaks = 2)
+  
+  sup_precip.ts <-
+    ts(annual_sum$Median,
+       start = c(1950),
+       end = c(2019))
+  year_index = cpts(cpt.mean(sup_precip.ts))
+  
+  # library(cpm)
+  # fit_cpm = processStream(annual_sum$Median, cpmType = "Mann-Whitney")  # Multiple change points
+  # fit_cpm$changePoints
+  # split_year = fit_cpm$changePoints + 1950
+  
+  split_year = annual_sum[year_index, ]$Year
+  
+  labels = get_labs(lake_name, balance_component)
+  title = get_title(lake_name, balance_component)
+  
+  if(split_year - 1950 <=5 || 2019 - split_year <= 5){
+    plot_sup_precip_mean_cpt <-
+      ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+      geom_line() +
+      geom_point(colour = "black", size = 0.5) +
+      labels + title + theme(plot.title = element_text(hjust = 0.5))
+    return(plot_sup_precip_mean_cpt)
+  }
+  
+  
+  reference_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year < split_year])
+  reference_sd_cpt <-
+    sd(annual_sum$Median[annual_sum$Year < split_year])
+  recent_mean_cpt <-
+    mean(annual_sum$Median[annual_sum$Year >= split_year])
+  recent_sd_cpt <-
+    sd(annual_sum$Median[annual_sum$Year >= split_year])
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      low =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt - reference_sd_cpt,
+          recent_mean_cpt - recent_sd_cpt
+        )
+    )
+  
+  annual_sum = annual_sum %>%
+    mutate(
+      high =
+        if_else(
+          Year < split_year,
+          reference_mean_cpt + reference_sd_cpt,
+          recent_mean_cpt + recent_sd_cpt
+        )
+    )
+  
+  
+  
+  plot_sup_precip_mean_cpt <-
+    ggplot(data = annual_sum, aes(x = Year, y = Median)) +
+    geom_line() +
+    geom_point(colour = "black", size = 0.5) +
+    labels + title + theme(plot.title = element_text(hjust = 0.5)) +
+    geom_ribbon(
+      aes(ymin = low, ymax = high),
+      alpha = 0.1,
+      linetype = "dashed",
+      colour = "grey"
+    ) +
+    geom_segment(aes(
+      x = split_year,
+      xend = 2019,
+      y = recent_mean_cpt,
+      yend = recent_mean_cpt
+    ),
+    colour = "red", size = 0.5,
+    data = annual_sum) +
+    geom_segment(
+      aes(
+        x = 1950,
+        xend = split_year,
+        y = reference_mean_cpt,
+        yend = reference_mean_cpt
+      ),
+      colour = "red", size = 0.5,
+      data = annual_sum
+    )
+  
+  return(plot_sup_precip_mean_cpt)
+}
+
 smooth_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
@@ -1353,12 +1465,13 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = cpt_stderror_omit5y_2010_func
 # func = cpt_stderror_func
 # func = cpt_stderror_omit5y_func
+# func = cpt_sd_omit5y_func
 # func = cpt_multiple_func
 # func = fixed_yrange_func
 # func = raw_func
 # func = linear_func
 # 
-# func("Superior", "Precipitation")
+func("Superior", "Precipitation")
 
 ggarrange(
   func("Superior", "Precipitation"),
