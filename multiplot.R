@@ -422,8 +422,8 @@ mean_stderror_func <- function(lake_name, balance_component) {
       low =
         if_else(
           Year < 1979,
-          reference_mean - reference_stderror,
-          recent_mean - recent_stderror
+          reference_mean - 1.96* reference_stderror,
+          recent_mean - 1.96* recent_stderror
         )
     )
   
@@ -433,8 +433,8 @@ mean_stderror_func <- function(lake_name, balance_component) {
       high =
         if_else(
           Year  < 1979,
-          reference_mean + reference_stderror,
-          recent_mean + recent_stderror
+          reference_mean + 1.96* reference_stderror,
+          recent_mean + 1.96* recent_stderror
         )
     )
   
@@ -884,8 +884,8 @@ cpt_stderror_func <- function(lake_name, balance_component) {
       low =
         if_else(
           Year < split_year,
-          reference_mean_cpt - reference_stderror_cpt,
-          recent_mean_cpt - recent_stderror_cpt
+          reference_mean_cpt - 1.96* reference_stderror_cpt,
+          recent_mean_cpt - 1.96* recent_stderror_cpt
         )
     )
   
@@ -895,8 +895,8 @@ cpt_stderror_func <- function(lake_name, balance_component) {
       high =
         if_else(
           Year < split_year,
-          reference_mean_cpt + reference_stderror_cpt,
-          recent_mean_cpt + recent_stderror_cpt
+          reference_mean_cpt + 1.96* reference_stderror_cpt,
+          recent_mean_cpt + 1.96* recent_stderror_cpt
         )
     )
   
@@ -1007,8 +1007,8 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
       low =
         if_else(
           Year < split_year,
-          reference_mean_cpt - reference_stderror_cpt,
-          recent_mean_cpt - recent_stderror_cpt
+          reference_mean_cpt - 1.96* reference_stderror_cpt,
+          recent_mean_cpt - 1.96* recent_stderror_cpt
         )
     )
   
@@ -1017,8 +1017,8 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
       high =
         if_else(
           Year < split_year,
-          reference_mean_cpt + reference_stderror_cpt,
-          recent_mean_cpt + recent_stderror_cpt
+          reference_mean_cpt + 1.96*reference_stderror_cpt,
+          recent_mean_cpt + 1.96*recent_stderror_cpt
         )
     )
   
@@ -1471,7 +1471,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = raw_func
 # func = linear_func
 # 
-func("Superior", "Precipitation")
+# func("Superior", "Precipitation")
 
 ggarrange(
   func("Superior", "Precipitation"),
