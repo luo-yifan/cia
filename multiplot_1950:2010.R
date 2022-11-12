@@ -14,14 +14,15 @@ library(plotrix)
 theme_set(theme_bw())
 setwd("./")
 
-lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
-balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+lake_name = c("superior", "miHuron", "erie", "ontario")
+balance_component = c("Precip", "Evap", "Runoff", "Outflow")
+
 
 mean_ci_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -62,11 +63,11 @@ mean_ci_func <- function(lake_name, balance_component) {
                recent_mean + recent_sd
              ))
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -103,7 +104,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -150,11 +151,11 @@ mean_stderror_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -191,7 +192,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -246,11 +247,11 @@ cpt_ci_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -290,7 +291,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -345,11 +346,11 @@ cpt_stderror_func <- function(lake_name, balance_component) {
         )
     )
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -391,7 +392,7 @@ smooth_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -415,11 +416,11 @@ smooth_func <- function(lake_name, balance_component) {
   recent_mean <- mean(annual_sum$Median[annual_sum$Year >= 1979])
   recent_sd <- sd(annual_sum$Median[annual_sum$Year >= 1979])
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -439,7 +440,7 @@ hockeystick_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -475,11 +476,11 @@ hockeystick_func <- function(lake_name, balance_component) {
   slope(o)
   dat2 <- data.frame(x = xx, y = broken.line(o)$fit)
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -495,7 +496,7 @@ set1979_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_GLWBData.csv",
+                   "_MonthlyRun_test195001202204_prior1900_10000iteration_0814.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -527,11 +528,11 @@ set1979_func <- function(lake_name, balance_component) {
   
   dati$grp = factor(ifelse(dati$x >= 1979, 1, 0))
   
-  labels = if (balance_component == "Precipitation")
+  labels = if (balance_component == "Precip")
     labs(y = lake_name, x = NULL)
   else
     labs(y = NULL, x = NULL)
-  title = if (lake_name == "Superior")
+  title = if (lake_name == "superior")
     ggtitle(balance_component)
   else
     NULL
@@ -560,23 +561,24 @@ set1979_func <- function(lake_name, balance_component) {
 # 
 # func("Superior", "Precipitation")
 
+
 ggarrange(
-  func("Superior", "Precipitation"),
-  func("Superior", "Evaporation"),
-  func("Superior", "Runoff"),
-  func("Superior", "Outflow"),
-  func("MichiganHuron", "Precipitation"),
-  func("MichiganHuron", "Evaporation"),
-  func("MichiganHuron", "Runoff"),
-  func("MichiganHuron", "Outflow"),
-  func("Erie", "Precipitation"),
-  func("Erie", "Evaporation"),
-  func("Erie", "Runoff"),
-  func("Erie", "Outflow"),
-  func("Ontario", "Precipitation"),
-  func("Ontario", "Evaporation"),
-  func("Ontario", "Runoff"),
-  func("Ontario", "Outflow"),
+  func("superior", "Precip"),
+  func("superior", "Evap"),
+  func("superior", "Runoff"),
+  func("superior", "Outflow"),
+  func("miHuron", "Precip"),
+  func("miHuron", "Evap"),
+  func("miHuron", "Runoff"),
+  func("miHuron", "Outflow"),
+  func("erie", "Precip"),
+  func("erie", "Evap"),
+  func("erie", "Runoff"),
+  func("erie", "Outflow"),
+  func("ontario", "Precip"),
+  func("ontario", "Evap"),
+  func("ontario", "Runoff"),
+  func("ontario", "Outflow"),
   ncol = 4,
   nrow = 4
 )

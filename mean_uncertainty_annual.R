@@ -11,18 +11,18 @@ library(lubridate)
 theme_set(theme_bw())
 setwd("./")
 
-lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
-balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+lake_name = c("superior", "miHuron", "erie", "ontario")
+balance_component = c("Precip(mm)", "Evap(mm)", "Runoff(mm)", "Outflow(cms)")
 
 get_labs = function(lake_name, balance_component){
-  label = if (lake_name == "Superior")
+  label = if (lake_name == "superior")
     labs(y = balance_component, x = NULL)
   else
     labs(y = NULL, x = NULL)
   return(label)
 }
 get_title = function(lake_name, balance_component){
-  title = if (balance_component == "Precipitation")
+  title = if (balance_component == "Precip(mm)")
     ggtitle(lake_name)
   else
     NULL
@@ -30,13 +30,11 @@ get_title = function(lake_name, balance_component){
 }
 
 uncertainty_compare_func_precip <- function(lake_name, balance_component) {
-  filename = paste(
-    "./l2s_posterior/",
-    lake_name,
-    balance_component,
-    "_2019.csv",
-    sep = ""
-  )
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_analysis19502022_prior19001969_1m.csv",
+                   sep = "")
   sup_precip <-
     read.csv(filename)
   str(sup_precip)
@@ -213,13 +211,11 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
 }
 
 uncertainty_compare_func_evap <- function(lake_name, balance_component) {
-  filename = paste(
-    "./l2s_posterior/",
-    lake_name,
-    balance_component,
-    "_2019.csv",
-    sep = ""
-  )
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_analysis19502022_prior19001969_1m.csv",
+                   sep = "")
   sup_evap <-
     read.csv(filename)
   str(sup_evap)
@@ -276,13 +272,11 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
 }
 
 uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
-  filename = paste(
-    "./l2s_posterior/",
-    lake_name,
-    balance_component,
-    "_2019.csv",
-    sep = ""
-  )
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_analysis19502022_prior19001969_1m.csv",
+                   sep = "")
   sup_runoff <-
     read.csv(filename)
   str(sup_runoff)
@@ -339,13 +333,11 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
 }  
   
 uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
-  filename = paste(
-    "./l2s_posterior/",
-    lake_name,
-    balance_component,
-    "_2019.csv",
-    sep = ""
-  )
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_analysis19502022_prior19001969_1m.csv",
+                   sep = "")
   sup_outflow <-
     read.csv(filename)
   str(sup_outflow)
@@ -407,35 +399,61 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
 # uncertainty_compare_func_precip("Superior", "Precipitation")
 
 ggarrange(
-  uncertainty_compare_func_precip("Superior", "Precipitation"),
-  uncertainty_compare_func_precip("MichiganHuron", "Precipitation"),
-  uncertainty_compare_func_precip("Erie", "Precipitation"),
-  uncertainty_compare_func_precip("Ontario", "Precipitation"),
+  uncertainty_compare_func_precip("superior", "Precip(mm)"),
+  uncertainty_compare_func_precip("miHuron", "Precip(mm)"),
+  uncertainty_compare_func_precip("erie", "Precip(mm)"),
+  uncertainty_compare_func_precip("ontario", "Precip(mm)"),
   
-  uncertainty_compare_func_evap("Superior", "Evaporation"),
-  uncertainty_compare_func_evap("MichiganHuron", "Evaporation"),
-  uncertainty_compare_func_evap("Ontario", "Evaporation"),
-  uncertainty_compare_func_evap("Erie", "Evaporation"),
+  uncertainty_compare_func_evap("superior", "Evap(mm)"),
+  uncertainty_compare_func_evap("miHuron", "Evap(mm)"),
+  uncertainty_compare_func_evap("ontario", "Evap(mm)"),
+  uncertainty_compare_func_evap("erie", "Evap(mm)"),
   
-  uncertainty_compare_func_runoff("Superior", "Runoff"),
-  uncertainty_compare_func_runoff("MichiganHuron", "Runoff"),
-  uncertainty_compare_func_runoff("Erie", "Runoff"),
-  uncertainty_compare_func_runoff("Ontario", "Runoff"),
+  uncertainty_compare_func_runoff("superior", "Runoff(mm)"),
+  uncertainty_compare_func_runoff("miHuron", "Runoff(mm)"),
+  uncertainty_compare_func_runoff("erie", "Runoff(mm)"),
+  uncertainty_compare_func_runoff("ontario", "Runoff(mm)"),
   
-  uncertainty_compare_func_outflow("Superior", "Outflow"),
-  uncertainty_compare_func_outflow("MichiganHuron", "Outflow"),
-  uncertainty_compare_func_outflow("Erie", "Outflow"),
-  uncertainty_compare_func_outflow("Ontario", "Outflow"),
+  uncertainty_compare_func_outflow("superior", "Outflow(cms)"),
+  uncertainty_compare_func_outflow("miHuron", "Outflow(cms)"),
+  uncertainty_compare_func_outflow("erie", "Outflow(cms)"),
+  uncertainty_compare_func_outflow("ontario", "Outflow(cms)"),
   
   ncol = 4,
   nrow = 4
 )
 
 
+# ggarrange(
+#   uncertainty_compare_func_precip("superior", "Precip"),
+#   uncertainty_compare_func_precip("miHuron", "Precip"),
+#   uncertainty_compare_func_precip("erie", "Precip"),
+#   uncertainty_compare_func_precip("ontario", "Precip"),
+# 
+#   uncertainty_compare_func_evap("superior", "Evap"),
+#   uncertainty_compare_func_evap("miHuron", "Evap"),
+#   uncertainty_compare_func_evap("erie", "Evap"),
+#   uncertainty_compare_func_evap("ontario", "Evap"),
+# 
+#   uncertainty_compare_func_runoff("superior", "Runoff"),
+#   uncertainty_compare_func_runoff("miHuron", "Runoff"),
+#   uncertainty_compare_func_runoff("erie", "Runoff"),
+#   uncertainty_compare_func_runoff("ontario", "Runoff"),
+# 
+#   uncertainty_compare_func_outflow("superior", "Outflow"),
+#   uncertainty_compare_func_outflow("miHuron", "Outflow"),
+#   uncertainty_compare_func_outflow("erie", "Outflow"),
+#   uncertainty_compare_func_outflow("ontario", "Outflow"),
+# 
+#   ncol = 4,
+#   nrow = 4
+# )
+
+
 # func = uncertainty_compare_func_evap
 # ggarrange(
 #   func("Superior", "Evaporation"),
-#   func("MichiganHuron", "Evaporation"),
+#   func("miHuron", "Evaporation"),
 #   func("Erie", "Evaporation"),
 #   func("Ontario", "Evaporation"),
 #   ncol = 1,

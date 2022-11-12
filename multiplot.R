@@ -17,18 +17,19 @@ library(EnvCpt)
 theme_set(theme_bw())
 setwd("./")
 
-lake_name = c("Superior", "MichiganHuron", "Erie", "Ontario")
-balance_component = c("Precipitation", "Evaporation", "Runoff", "Outflow")
+lake_name = c("superior", "miHuron", "erie", "ontario")
+balance_component = c("Precip(mm)", "Evap(mm)", "Runoff(mm)", "Outflow(cms)")
+
 
 get_labs = function(lake_name, balance_component){
-  label = if (lake_name == "Superior")
+  label = if (lake_name == "superior")
     labs(y = balance_component, x = NULL)
   else
     labs(y = NULL, x = NULL)
   return(label)
 }
 get_title = function(lake_name, balance_component){
-  title = if (balance_component == "Precipitation")
+  title = if (balance_component == "Precip(mm)")
     ggtitle(lake_name)
   else
     NULL
@@ -39,7 +40,7 @@ raw_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -73,7 +74,7 @@ raw_func <- function(lake_name, balance_component) {
     theme(plot.title = element_text(hjust = 0.5))
     #  + geom_segment(aes(
     #   x = 1979,
-    #   xend = 2019,
+    #   xend = 2021,
     #   y = recent_mean,
     #   yend = recent_mean
     # ),
@@ -89,11 +90,11 @@ raw_func <- function(lake_name, balance_component) {
 }
 
 fixed_yrange_func <- function(lake_name, balance_component, ymin, ymax) {
-    filename = paste("./l2s_posterior/",
-                     lake_name,
-                     balance_component,
-                     "_2019.csv",
-                     sep = "")
+  filename = paste("./l2s_posterior/",
+                   lake_name,
+                   balance_component,
+                   "_analysis19502022_prior19001969_1m.csv",
+                   sep = "")
     sup_precip <-
       read.csv(filename)
     str(sup_precip)
@@ -126,7 +127,7 @@ fixed_yrange_func <- function(lake_name, balance_component, ymin, ymax) {
       theme(plot.title = element_text(hjust = 0.5)) +
       # geom_segment(aes(
       #   x = 1979,
-      #   xend = 2019,
+      #   xend = 2021,
       #   y = recent_mean,
       #   yend = recent_mean
       # ),
@@ -146,7 +147,7 @@ linear_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -186,7 +187,7 @@ uncertainty_percent_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -226,7 +227,7 @@ uncertainty_mm_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -266,7 +267,7 @@ mean_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -300,7 +301,7 @@ mean_func <- function(lake_name, balance_component) {
     theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = 1979,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -319,7 +320,7 @@ mean_ci_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -374,7 +375,7 @@ mean_ci_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = 1979,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean,
       yend = recent_mean
     ), colour = "red", size = 0.5,
@@ -393,7 +394,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -454,7 +455,7 @@ mean_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = 1979,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean,
       yend = recent_mean
     ),
@@ -475,7 +476,7 @@ cpt_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -499,7 +500,7 @@ cpt_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -522,7 +523,7 @@ cpt_func <- function(lake_name, balance_component) {
     labels + title + theme(plot.title = element_text(hjust = 0.5)) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -545,7 +546,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -564,7 +565,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -614,7 +615,7 @@ cpt_ci_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -637,7 +638,7 @@ cpt_stderror_2010_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -732,7 +733,7 @@ cpt_stderror_omit5y_2010_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -845,7 +846,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -866,7 +867,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   split_year = annual_sum[year_index, ]$Year
   
@@ -904,7 +905,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
   #   labs(y = lake_name, x = NULL)
   # else
   #   labs(y = NULL, x = NULL)
-  # title = if (lake_name == "Superior")
+  # title = if (lake_name == "superior")
   #   ggtitle(balance_component)
   # else
   #   NULL
@@ -925,7 +926,7 @@ cpt_stderror_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -949,7 +950,7 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -970,7 +971,7 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
 
   # library(cpm)
@@ -983,7 +984,7 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
   labels = get_labs(lake_name, balance_component)
   title = get_title(lake_name, balance_component)
   
-  if(split_year - 1950 <=5 || 2019 - split_year <= 5){
+  if(split_year - 1950 <=5 || 2021 - split_year <= 5){
     plot_sup_precip_mean_cpt <-
       ggplot(data = annual_sum, aes(x = Year, y = Median)) +
       geom_line() +
@@ -1037,7 +1038,7 @@ cpt_stderror_omit5y_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -1061,7 +1062,7 @@ cpt_sd_omit5y_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1082,7 +1083,7 @@ cpt_sd_omit5y_func <- function(lake_name, balance_component) {
   sup_precip.ts <-
     ts(annual_sum$Median,
        start = c(1950),
-       end = c(2019))
+       end = c(2021))
   year_index = cpts(cpt.mean(sup_precip.ts))
   
   # library(cpm)
@@ -1095,7 +1096,7 @@ cpt_sd_omit5y_func <- function(lake_name, balance_component) {
   labels = get_labs(lake_name, balance_component)
   title = get_title(lake_name, balance_component)
   
-  if(split_year - 1950 <=5 || 2019 - split_year <= 5){
+  if(split_year - 1950 <=5 || 2021 - split_year <= 5){
     plot_sup_precip_mean_cpt <-
       ggplot(data = annual_sum, aes(x = Year, y = Median)) +
       geom_line() +
@@ -1149,7 +1150,7 @@ cpt_sd_omit5y_func <- function(lake_name, balance_component) {
     ) +
     geom_segment(aes(
       x = split_year,
-      xend = 2019,
+      xend = 2021,
       y = recent_mean_cpt,
       yend = recent_mean_cpt
     ),
@@ -1173,7 +1174,7 @@ smooth_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1213,7 +1214,7 @@ hockeystick_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1261,7 +1262,7 @@ autodetect_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1306,7 +1307,7 @@ set1979_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1351,7 +1352,7 @@ rollmean_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1409,7 +1410,7 @@ cpt_multiple_func <- function(lake_name, balance_component) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
-                   "_2019.csv",
+                   "_analysis19502022_prior19001969_1m.csv",
                    sep = "")
   sup_precip <-
     read.csv(filename)
@@ -1467,29 +1468,32 @@ cpt_multiple_func <- function(lake_name, balance_component) {
 # func = cpt_stderror_omit5y_func
 # func = cpt_sd_omit5y_func
 # func = cpt_multiple_func
-# func = fixed_yrange_func
+func = fixed_yrange_func
 # func = raw_func
 # func = linear_func
 # 
-# func("Superior", "Precipitation")
+# func("superior", "Precip(mm)")
+
+# uncertainty_compare_func_Precip("superior", "Precip(mm)")
+
 
 ggarrange(
-  func("Superior", "Precipitation"),
-  func("MichiganHuron", "Precipitation"),
-  func("Erie", "Precipitation"),
-  func("Ontario", "Precipitation"),
-  func("Superior", "Evaporation"),
-  func("MichiganHuron", "Evaporation"),
-  func("Ontario", "Evaporation"),
-  func("Erie", "Evaporation"),
-  func("Superior", "Runoff"),
-  func("MichiganHuron", "Runoff"),
-  func("Erie", "Runoff"),
-  func("Ontario", "Runoff"),
-  func("Superior", "Outflow"),
-  func("MichiganHuron", "Outflow"),
-  func("Erie", "Outflow"),
-  func("Ontario", "Outflow"),
+  func("superior", "Precip(mm)"),
+  func("miHuron", "Precip(mm)"),
+  func("erie", "Precip(mm)"),
+  func("ontario", "Precip(mm)"),
+  func("superior", "Evap(mm)"),
+  func("miHuron", "Evap(mm)"),
+  func("erie", "Evap(mm)"),
+  func("ontario", "Evap(mm)"),
+  func("superior", "Runoff(mm)"),
+  func("miHuron", "Runoff(mm)"),
+  func("erie", "Runoff(mm)"),
+  func("ontario", "Runoff(mm)"),
+  func("superior", "Outflow(cms)"),
+  func("miHuron", "Outflow(cms)"),
+  func("erie", "Outflow(cms)"),
+  func("ontario", "Outflow(cms)"),
   ncol = 4,
   nrow = 4
 )
