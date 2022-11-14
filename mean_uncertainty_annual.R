@@ -29,7 +29,7 @@ get_title = function(lake_name, balance_component){
   return(title)
 }
 
-uncertainty_compare_func_precip <- function(lake_name, balance_component) {
+uncertainty_compare_func_precip <- function(lake_name, balance_component, radio) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
@@ -167,6 +167,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   
   labels = get_labs(lake_name, balance_component)
   title = get_title(lake_name, balance_component)
+
   
   plot_sup_precip_l2serror_usgshigh <-
     ggplot(data = annual_sum,
@@ -186,7 +187,17 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
     #   y = "mm",
     #   x = "Year") +
     geom_line(color = "red", size = 0.5)+
-    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+    labels + title  + theme(plot.title = element_text(hjust = 0.5)) + 
+    # Custom the Y scales:
+    scale_y_continuous(
+      
+      # Features of the first axis
+      name = "Outflow(cms)",
+      
+      
+      # Add a second axis and specify its features
+      sec.axis = sec_axis( trans=~.*radio, name="Outflow(cfs)",labels = function(x) format(x, scientific = TRUE))
+    )
   plot_sup_precip_l2serror_usgshigh
  
   # plot_sup_precip_l2serror_usgslow <-
@@ -210,7 +221,7 @@ uncertainty_compare_func_precip <- function(lake_name, balance_component) {
   # plot_sup_precip_l2serror_usgslow
 }
 
-uncertainty_compare_func_evap <- function(lake_name, balance_component) {
+uncertainty_compare_func_evap <- function(lake_name, balance_component, radio) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
@@ -247,7 +258,17 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
     ),
     fill = "yellow", alpha=0.3) +
     geom_line(color = "red", size = 0.5)+
-    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+    labels + title  + theme(plot.title = element_text(hjust = 0.5))+
+    # Custom the Y scales:
+    scale_y_continuous(
+      
+      # Features of the first axis
+      name = "Outflow(cms)",
+      
+      
+      # Add a second axis and specify its features
+      sec.axis = sec_axis( trans=~.*radio, name="Outflow(cfs)",labels = function(x) format(x, scientific = TRUE))
+    )
   plot_sup_evap_l2serror_usgshigh
 
   # plot_sup_evap_l2serror_usgslow <-
@@ -271,7 +292,7 @@ uncertainty_compare_func_evap <- function(lake_name, balance_component) {
   # plot_sup_evap_l2serror_usgslow
 }
 
-uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
+uncertainty_compare_func_runoff <- function(lake_name, balance_component, radio) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
@@ -308,7 +329,17 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
     ),
     fill = "yellow", alpha=0.3) +
     geom_line(color = "red", size = 0.5)+
-    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+    labels + title  + theme(plot.title = element_text(hjust = 0.5))+
+    # Custom the Y scales:
+    scale_y_continuous(
+      
+      # Features of the first axis
+      name = "Outflow(cms)",
+      
+      
+      # Add a second axis and specify its features
+      sec.axis = sec_axis( trans=~.*radio, name="Outflow(cfs)",labels = function(x) format(x, scientific = TRUE))
+    )
   plot_sup_runoff_l2serror_usgshigh
   
   # plot_sup_runoff_l2serror_usgslow <-
@@ -332,7 +363,7 @@ uncertainty_compare_func_runoff <- function(lake_name, balance_component) {
   # plot_sup_runoff_l2serror_usgslow
 }  
   
-uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
+uncertainty_compare_func_outflow <- function(lake_name, balance_component, radio) {
   filename = paste("./l2s_posterior/",
                    lake_name,
                    balance_component,
@@ -345,6 +376,10 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
     as.yearmon(paste(sup_outflow$Year, sup_outflow$Month), "%Y %m")
   sup_outflow$formated_date <-
     format(as.Date(sup_outflow$yearmon), "%m/%Y")
+  
+  sup_outflow$Median = sup_outflow$Median / 12.0
+  sup_outflow$X2.5.Percentile = sup_outflow$X2.5.Percentile / 12.0
+  sup_outflow$X97.5.Percentile = sup_outflow$X97.5.Percentile / 12.0
   
   annual_sum <- aggregate(Median ~ Year , data = sup_outflow , sum)
   annual_2.5 <-
@@ -369,7 +404,17 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
     ),
     fill = "yellow", alpha=0.3) +
     geom_line(color = "red", size = 0.5)+
-    labels + title  + theme(plot.title = element_text(hjust = 0.5))
+    labels + title  + theme(plot.title = element_text(hjust = 0.5)) + 
+    # Custom the Y scales:
+    scale_y_continuous(
+      
+      # Features of the first axis
+      name = "Outflow(cms)",
+      
+      
+      # Add a second axis and specify its features
+      sec.axis = sec_axis( trans=~.*radio, name="Outflow(cfs)",labels = function(x) format(x, scientific = TRUE))
+    )
   plot_sup_outflow_l2serror_usgshigh
   
   # plot_sup_outflow_l2serror_usgslow <-
@@ -399,25 +444,25 @@ uncertainty_compare_func_outflow <- function(lake_name, balance_component) {
 # uncertainty_compare_func_precip("Superior", "Precipitation")
 
 ggarrange(
-  uncertainty_compare_func_precip("superior", "Precip(mm)"),
-  uncertainty_compare_func_precip("miHuron", "Precip(mm)"),
-  uncertainty_compare_func_precip("erie", "Precip(mm)"),
-  uncertainty_compare_func_precip("ontario", "Precip(mm)"),
+  uncertainty_compare_func_precip("superior", "Precip(mm)",1.0),
+  uncertainty_compare_func_precip("miHuron", "Precip(mm)",1.0),
+  uncertainty_compare_func_precip("erie", "Precip(mm)",1.0),
+  uncertainty_compare_func_precip("ontario", "Precip(mm)",1.0),
   
-  uncertainty_compare_func_evap("superior", "Evap(mm)"),
-  uncertainty_compare_func_evap("miHuron", "Evap(mm)"),
-  uncertainty_compare_func_evap("ontario", "Evap(mm)"),
-  uncertainty_compare_func_evap("erie", "Evap(mm)"),
+  uncertainty_compare_func_evap("superior", "Evap(mm)",1.0),
+  uncertainty_compare_func_evap("miHuron", "Evap(mm)",1.0),
+  uncertainty_compare_func_evap("ontario", "Evap(mm)",1.0),
+  uncertainty_compare_func_evap("erie", "Evap(mm)",1.0),
   
-  uncertainty_compare_func_runoff("superior", "Runoff(mm)"),
-  uncertainty_compare_func_runoff("miHuron", "Runoff(mm)"),
-  uncertainty_compare_func_runoff("erie", "Runoff(mm)"),
-  uncertainty_compare_func_runoff("ontario", "Runoff(mm)"),
+  uncertainty_compare_func_runoff("superior", "Runoff(mm)",1.0),
+  uncertainty_compare_func_runoff("miHuron", "Runoff(mm)",1.0),
+  uncertainty_compare_func_runoff("erie", "Runoff(mm)",1.0),
+  uncertainty_compare_func_runoff("ontario", "Runoff(mm)",1.0),
   
-  uncertainty_compare_func_outflow("superior", "Outflow(cms)"),
-  uncertainty_compare_func_outflow("miHuron", "Outflow(cms)"),
-  uncertainty_compare_func_outflow("erie", "Outflow(cms)"),
-  uncertainty_compare_func_outflow("ontario", "Outflow(cms)"),
+  uncertainty_compare_func_outflow("superior", "Outflow(cms)",1.0),
+  uncertainty_compare_func_outflow("miHuron", "Outflow(cms)",1.0),
+  uncertainty_compare_func_outflow("erie", "Outflow(cms)",1.0),
+  uncertainty_compare_func_outflow("ontario", "Outflow(cms)",1.0),
   
   ncol = 4,
   nrow = 4
